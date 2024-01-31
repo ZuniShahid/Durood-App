@@ -40,13 +40,12 @@ class _CircleImageState extends State<CircleImage> {
           child: Container(
             width: widget.width ?? 5.h,
             height: widget.height ?? 5.h,
-            decoration: BoxDecoration(
-                color: Colors.white,
-                shape: BoxShape.circle,
-                border:
-                    Border.all(color: widget.placeBorderColor ?? Colors.black)),
+            decoration: const BoxDecoration(
+              color: AppColors.secondary,
+              shape: BoxShape.circle,
+            ),
             child: Icon(
-              size: widget.height == null ? 4.h : widget.height! - 1.h,
+              size: widget.height,
               Icons.person,
               color: widget.placeHolderColor ?? AppColors.accentColor,
             ),

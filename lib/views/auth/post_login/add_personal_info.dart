@@ -49,25 +49,23 @@ class _AddPersonalInfoScreenState extends State<AddPersonalInfoScreen> {
           label: 'Continue',
         ),
       ),
+      appBar: AppBar(
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            child: const Text(
+              'SKIP',
+              style: TextStyle(color: Color(0xFFD7D5D5)),
+            ),
+          ),
+        ],
+      ),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Align(
-              alignment: Alignment.topRight,
-              child: Padding(
-                padding: EdgeInsets.only(right: 16.0, top: 10.0.h),
-                child: TextButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  child: const Text(
-                    'SKIP',
-                    style: TextStyle(color: Color(0xFFD7D5D5)),
-                  ),
-                ),
-              ),
-            ),
             const Padding(
               padding: EdgeInsets.all(20.0),
               child: Text(

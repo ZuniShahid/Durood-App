@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../generated/assets.dart';
+import '../auth/post_login/add_personal_info.dart';
 import 'home_page.dart';
 
 class BottomNavBar extends StatefulWidget {
@@ -15,9 +16,9 @@ class _BottomNavBarState extends State<BottomNavBar> {
 
   final List<Widget> _screens = [
     const HomePage(),
+    // const HomePage(),
     const HomePage(),
-    const HomePage(),
-    const HomePage(),
+    const AddPersonalInfoScreen(),
   ];
 
   @override
@@ -34,9 +35,8 @@ class _BottomNavBarState extends State<BottomNavBar> {
         },
         items: [
           _buildNavItem('Home', Assets.imagesHomeIcon, 0),
-          _buildNavItem('Durood', Assets.imagesHeadphones, 1),
-          _buildNavItem('Videos', Assets.imagesVideoCam, 2),
-          _buildNavItem('Profile', Assets.imagesUser, 3),
+          _buildNavItem('Videos', Assets.imagesVideoCam, 1),
+          _buildNavItem('Profile', Assets.imagesUser, 2),
         ],
       ),
     );

@@ -1,11 +1,14 @@
 import 'package:audio_waveforms/audio_waveforms.dart';
 
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../constants/app_colors.dart';
 import '../../constants/next_button.dart';
 import '../../generated/assets.dart';
+import '../custom_room/custom_room.dart';
+import '../custom_room/custom_room_detail.dart';
 import 'common/SalawatCardWidget.dart';
 import 'common/voice_selection_widget.dart';
 import 'durood_player_card.dart';
@@ -30,9 +33,13 @@ class _HomePageState extends State<HomePage> {
   String selectedVoice = 'M. Amir';
 
   void handleVoiceSelected(String voice) {
-    setState(() {
-      selectedVoice = voice;
-    });
+    if (voice == 'Custom') {
+      Get.to(() => CustomRoomDetail());
+    } else {
+      setState(() {
+        selectedVoice = voice;
+      });
+    }
   }
 
   @override
@@ -68,7 +75,9 @@ class _HomePageState extends State<HomePage> {
               width: 100,
               height: 34,
               child: CommonElevatedButton(
-                onPressed: () {},
+                onPressed: () {
+                  Get.to(() => const CreateCustomRoom());
+                },
                 label: 'Custom Room',
               ),
             ),
