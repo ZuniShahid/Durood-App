@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
@@ -10,7 +11,7 @@ class Go {
   static Future<T?> to<T>(dynamic page,
       {dynamic arguments, Transition? transition, bool? opaque}) async {
     return await Get.to<T>(page,
-        transition: transition ?? Transition.rightToLeft,
+        transition: transition ?? Transition.fadeIn,
         duration: const Duration(milliseconds: 350),
         opaque: opaque);
   }
@@ -35,5 +36,17 @@ class Go {
           transitionDuration: const Duration(milliseconds: 350),
         ),
         (route) => false);
+  }
+
+  /// Similar to **Navigation.pushAndRemoveUntil()**, but clears all previous routes.
+  static Future<dynamic> offAll(Widget Function() pageBuilder,
+      {Transition? transition}) async {
+    Get.offAll(
+      GetPageRoute(
+        page: () => pageBuilder(),
+        transition: transition ?? Transition.circularReveal,
+        transitionDuration: const Duration(milliseconds: 350),
+      ),
+    );
   }
 }

@@ -53,7 +53,7 @@ class TimeDateFunctions {
   static String dateTimeInDigitsWithForwardDash(DateTime? value) {
     if (value == null) return '';
     DateFormat format = DateFormat('dd/MM/yyyy');
-    return format.format(value!);
+    return format.format(value);
   }
 
   static String dateInDigits(int value) {

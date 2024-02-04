@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:get/get.dart';
+import 'package:http/http.dart' as http;
 
 import '../api_services/api_exceptions.dart';
 import '../api_services/data_api.dart';
@@ -8,31 +9,31 @@ import '../constants/page_navigation.dart';
 import '../models/user_model.dart';
 import '../preferences/auth_prefrence.dart';
 import '../utilities/widgets/custom_dialog.dart';
-
+import '../views/auth/login_page.dart';
+import '../views/auth/otp_screen.dart';
+import '../views/auth/post_login/enable_notification.dart';
+import '../views/home/bottom_nav_bar.dart';
 import 'base_controller.dart';
 
 class AuthController extends GetxController {
-  final AuthPrefrence _authPrefrence = AuthPrefrence.instance;
+  final AuthPrefrence _authPreference = AuthPrefrence.instance;
   final BaseController _baseController = BaseController.instance;
   RxString accessToken = "".obs;
-  RxString userRefreshToken = "".obs;
-
   RxBool savId = true.obs;
-
   RxBool isLoggedIn = false.obs;
-
-  Rx<UserModel> userData = UserModel(userId: 1).obs;
-
+  Rx<UserModel> userData = UserModel().obs;
   Rx<String> userId = ''.obs;
 
   @override
   Future<void> onInit() async {
-    accessToken.value = await _authPrefrence.getUserDataToken();
-    userRefreshToken.value = await _authPrefrence.getUserRefreshToken();
-    isLoggedIn.value = await _authPrefrence.getUserLoggedIn();
+    accessToken.value = await _authPreference.getUserDataToken();
+    isLoggedIn.value = await _authPreference.getUserLoggedIn();
+    var res = await _authPreference.getUserData();
     if (isLoggedIn.value) {
-      refreshToken();
+      var result = json.decode(res);
+      userData.value = UserModel.fromJson(result['Data']);
     } else {
+      // Handle the case when the user is not logged in.
       // refreshToken();
     }
 
@@ -40,12 +41,15 @@ class AuthController extends GetxController {
     super.onInit();
   }
 
-  /*<---------------------Login--------------------->*/
+  /*<---------------------Signup--------------------->*/
 
-  Future userLogin(var body) async {
-    _baseController.showLoading('Logging user...');
-    var response =
-        await DataApiService.instance.post('/login', body).catchError((error) {
+  Future verifyOtp(var body, signUpBody) async {
+    _baseController.showLoading('Verifying OTP...');
+
+    // Call the 'auth/verify/otp' API to verify the OTP
+    var response = await DataApiService.instance
+        .post('auth/verify/otp', body)
+        .catchError((error) {
       if (error is BadRequestException) {
         return error.message!;
       } else {
@@ -53,18 +57,87 @@ class AuthController extends GetxController {
       }
     });
 
+    if (response == null) {
+      _baseController.hideLoading();
+      return;
+    }
+
+    var result = json.decode(response);
+    print(result);
+    _baseController.hideLoading();
+
+    if (!result['Error']) {
+      Go.to(() => OTPScreen(
+            email: body['email'].toString(),
+            otpCode: result['otp'].toString(),
+            body: signUpBody,
+            signUp: true,
+          ));
+    } else {
+      CustomDialogBox.showErrorDialog(description: result["Message"]);
+      return result["Message"];
+    }
+  }
+
+  Future signUp(var body) async {
+    _baseController.showLoading('Logging user...');
+    var response = await DataApiService.instance
+        .post('auth/signup', body)
+        .catchError((error) {
+      if (error is BadRequestException) {
+        return error.message!;
+      } else {
+        _baseController.handleError(error);
+      }
+    });
     if (response == null) return;
+
     _baseController.hideLoading();
     var result = json.decode(response);
-    if (result['status'] == "success") {
-      userData.value = UserModel.fromJson(result['user']);
-      accessToken.value = userData.value.accessToken!;
-      userRefreshToken.value = userData.value.refreshToken!;
-      update();
-      // Go.offUntil(() => const BottomBar());
-      return '';
+    print(result);
+    if (!result['Error']) {
+      var log = {
+        'email': body['email'],
+        'password': body['password'],
+      };
+      userLogin(log);
     } else {
-      return result["errorMsg"];
+      CustomDialogBox.showErrorDialog(description: result["Message"]);
+      return result["Message"];
+    }
+  }
+
+  /*<---------------------Login--------------------->*/
+
+  Future userLogin(var body) async {
+    _baseController.showLoading('Logging user...');
+    var response = await DataApiService.instance
+        .post('auth/login', body)
+        .catchError((error) {
+      if (error is BadRequestException) {
+        return error.message!;
+      } else {
+        _baseController.handleError(error);
+      }
+    });
+    if (response == null) return;
+
+    _baseController.hideLoading();
+    var result = json.decode(response);
+    print(result);
+    if (!result['Error']) {
+      userData.value = UserModel.fromJson(result['Data']);
+      accessToken.value = result['token'];
+      _authPreference.saveUserData(token: response);
+      _authPreference.saveUserDataToken(token: accessToken.value);
+      _authPreference.setUserLoggedIn(true);
+
+      update();
+
+      Go.offUntil(() => const EnableNotificationScreen());
+    } else {
+      CustomDialogBox.showErrorDialog(description: result["Message"]);
+      return result["Message"];
     }
   }
 
@@ -72,42 +145,118 @@ class AuthController extends GetxController {
 
   Future signOut() async {
     _baseController.showLoading('Signing out...');
-    _authPrefrence.saveUserDataToken(token: '');
-    _authPrefrence.setUserLoggedIn(false);
-    _authPrefrence.saveUserData(token: '');
+    _authPreference.saveUserDataToken(token: '');
+    _authPreference.setUserLoggedIn(false);
+    _authPreference.saveUserData(token: '');
     isLoggedIn(false);
     accessToken.value = '';
     update();
     _baseController.hideLoading();
-    // Get.offAll(() => const LoginScreen());
+    Go.offUntil(() => const LoginScreen());
   }
 
-  Future refreshToken() async {
-    var body = {'token': userRefreshToken.value};
+  Future forgotPassword(var body) async {
+    _baseController.showLoading('Sending otp to you email...');
     var response = await DataApiService.instance
-        .post('/refresh_token', body)
+        .post('auth/forgot/password', body)
         .catchError((error) {
       if (error is BadRequestException) {
-        var apiError = json.decode(error.message!);
-        CustomDialogBox.showErrorDialog(description: apiError["reason"]);
+        return error.message!;
       } else {
         _baseController.handleError(error);
       }
     });
     if (response == null) return;
-    var result = json.decode(response);
 
-    userData.value = UserModel.fromJson(result);
-    accessToken.value = userData.value.accessToken!;
-    userRefreshToken.value = userData.value.refreshToken!;
-    if (savId.isTrue) {
-      _authPrefrence.saveUserDataToken(token: accessToken.value);
-      _authPrefrence.saveUserRefreshToken(token: userRefreshToken.value);
-      _authPrefrence.setUserLoggedIn(true);
-      isLoggedIn.value = true;
+    _baseController.hideLoading();
+    var result = json.decode(response);
+    print(result);
+    if (!result['Error']) {
+      Go.to(() =>
+          OTPScreen(otpCode: result['otp'].toString(), email: body['email']));
     } else {
-      isLoggedIn.value = false;
+      CustomDialogBox.showErrorDialog(description: result["Message"]);
+      return result["Message"];
     }
-    update();
+  }
+
+  Future resetPassword(var body) async {
+    _baseController.showLoading('Updating your password...');
+    var response = await DataApiService.instance
+        .post('auth/reset/password', body)
+        .catchError((error) {
+      if (error is BadRequestException) {
+        return error.message!;
+      } else {
+        _baseController.handleError(error);
+      }
+    });
+    if (response == null) return;
+
+    _baseController.hideLoading();
+    var result = json.decode(response);
+    print(result);
+    if (!result['Error']) {
+      Go.offUntil(() => const LoginScreen());
+    } else {
+      CustomDialogBox.showErrorDialog(description: result["Message"]);
+    }
+  }
+
+  Future<void> editProfile(
+      String userId, String name, String? imagePath) async {
+    _baseController.showLoading('Updating your profile...');
+
+    final String token = accessToken.value;
+
+    var headers = {'Authorization': 'Bearer $token'};
+    var request = http.MultipartRequest(
+      'POST',
+      Uri.parse('https://eramsaeed.com/Durood-App/api/auth/edit/profile'),
+    );
+
+    request.fields.addAll({
+      'user_id': userId,
+      'name': name,
+    });
+
+    if (imagePath != null) {
+      request.files.add(await http.MultipartFile.fromPath('image', imagePath));
+    }
+
+    request.headers.addAll(headers);
+
+    try {
+      http.StreamedResponse response = await request.send();
+
+      // Read the response and parse JSON
+      String responseBody = await response.stream.bytesToString();
+      Map<String, dynamic> result = json.decode(responseBody);
+
+      if (result["Error"] == false) {
+        // Display the success message from the API response
+        _baseController.hideLoading();
+
+        CustomDialogBox.showSuccessDialog(
+            description: result["Message"],
+            onPressed: () {
+              Go.offUntil(() => const BottomNavBar());
+            });
+
+        // Handle successful response, if needed
+      } else {
+        _baseController.hideLoading();
+
+        // Display the error message from the API response
+        CustomDialogBox.showErrorDialog(description: result["Message"]);
+        // Handle error response, if needed
+      }
+    } catch (error) {
+      _baseController.hideLoading();
+
+      CustomDialogBox.showErrorDialog(description: 'Error updating profile');
+      print('Error during edit profile request: $error');
+      // Handle exceptions, if needed
+    }
   }
 }

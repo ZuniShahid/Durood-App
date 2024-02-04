@@ -1,9 +1,13 @@
-import 'package:durood_app/constants/app_colors.dart';
+import 'package:durood_app/utilities/widgets/custom_toast.dart';
+import 'package:durood_app/views/home/bottom_nav_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:sizer/sizer.dart';
 
+import '../../../constants/app_colors.dart';
 import '../../../constants/next_button.dart';
+import '../../../constants/page_navigation.dart';
 import '../../../generated/assets.dart';
 import 'add_personal_info.dart';
 import 'post_login_onboarding.dart';
@@ -38,7 +42,7 @@ class EnableNotificationScreen extends StatelessWidget {
                     padding: EdgeInsets.only(right: 16.0, top: 10.0.h),
                     child: TextButton(
                       onPressed: () {
-                        Navigator.pop(context);
+                        Go.offUntil(() => const BottomNavBar());
                       },
                       child: const Text(
                         'SKIP',
@@ -87,7 +91,17 @@ class EnableNotificationScreen extends StatelessWidget {
                 padding:
                     const EdgeInsets.only(bottom: 30.0, left: 20, right: 20),
                 child: CommonElevatedButton(
-                  onPressed: () {},
+                  onPressed: () async {
+                    PermissionStatus status =
+                        await Permission.notification.status;
+
+                    if (status.isDenied) {
+                      await Permission.notification.request();
+                    } else if (status.isGranted) {
+                      CustomToast.successToast(
+                          message: 'Already Permission Accessed');
+                    } else {}
+                  },
                   label: 'Enable Notifications',
                 ),
               ),
@@ -96,7 +110,7 @@ class EnableNotificationScreen extends StatelessWidget {
                     const EdgeInsets.only(bottom: 30.0, left: 20, right: 20),
                 child: CommonElevatedButton(
                   onPressed: () {
-                    Get.to(() => AddPersonalInfoScreen());
+                    Go.to(() => const PostOnBoardingScreen());
                   },
                   label: 'Continue',
                   textColor: AppColors.accentColor,

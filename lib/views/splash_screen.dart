@@ -1,9 +1,11 @@
-import 'package:durood_app/constants/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../constants/app_colors.dart';
+import '../constants/page_navigation.dart';
 import '../controllers/auth_controller.dart';
 import '../preferences/auth_prefrence.dart';
+import 'home/bottom_nav_bar.dart';
 import 'onboarding/onboarding_screen.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -27,12 +29,12 @@ class _SplashScreenState extends State<SplashScreen> {
 
     if (isLoggedIn) {
       Future.delayed(const Duration(milliseconds: 4000), () {
-        // Get.offAll(() => const BottomBar());
+        Go.offUntil(() => const BottomNavBar());
       });
     } else {
       Future.delayed(const Duration(milliseconds: 4000), () {
-        Get.offAll(() => OnboardingScreen());
-        // Get.offAll(() => const LoginScreen());
+        Go.offUntil(() => const OnboardingScreen());
+        // Go.offUntil(() => const LoginScreen());
       });
     }
   }

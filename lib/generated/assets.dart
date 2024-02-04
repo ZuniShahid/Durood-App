@@ -6,10 +6,14 @@ class Assets {
       'assets/animations/congratulations.json';
   static const String animationsError = 'assets/animations/error.json';
   static const String animationsNoResults = 'assets/animations/no_results.json';
+  static const String imagesAfrica = 'assets/images/Africa.jpg';
   static const String imagesAppIcon = 'assets/images/app_icon.png';
+  static const String imagesAudiowave = 'assets/images/audiowave.png';
   static const String imagesBell = 'assets/images/bell.png';
   static const String imagesBg = 'assets/images/bg.jpg';
   static const String imagesEnableNOTIBG = 'assets/images/enable_NOTI_BG.png';
+  static const String imagesEram = 'assets/images/eram.png';
+  static const String imagesGlobe = 'assets/images/globe.png';
   static const String imagesGoogleIcon = 'assets/images/google_icon.png';
   static const String imagesHeadphones = 'assets/images/headphones.png';
   static const String imagesHomeIcon = 'assets/images/home_icon.png';
@@ -25,5 +29,7 @@ class Assets {
   static const String imagesSatelliteAntenna =
       'assets/images/satellite_antenna.png';
   static const String imagesUser = 'assets/images/user.png';
+  static const String imagesUserPlaceholder =
+      'assets/images/user_placeholder.png';
   static const String imagesVideoCam = 'assets/images/video_cam.png';
 }

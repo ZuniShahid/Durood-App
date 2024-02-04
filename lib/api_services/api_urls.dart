@@ -1,1 +1,1 @@
-const String BASE_URL = 'http://hr.alnajah.com.my/public/api';
+const String BASE_URL = 'https://eramsaeed.com/Durood-App/api/';

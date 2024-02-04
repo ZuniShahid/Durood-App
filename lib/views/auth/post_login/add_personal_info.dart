@@ -1,16 +1,16 @@
 import 'dart:io';
 
-import 'package:durood_app/constants/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:sizer/sizer.dart';
 
+import '../../../constants/app_colors.dart';
+import '../../../constants/circle_image.dart';
 import '../../../constants/common_text_field.dart';
 import '../../../constants/custom_validators.dart';
 import '../../../constants/next_button.dart';
-import '../../../generated/assets.dart';
-import 'post_login_onboarding.dart';
+import '../../../controllers/auth_controller.dart';
+import '../../../models/user_model.dart';
 
 class AddPersonalInfoScreen extends StatefulWidget {
   const AddPersonalInfoScreen({super.key});
@@ -20,9 +20,8 @@ class AddPersonalInfoScreen extends StatefulWidget {
 }
 
 class _AddPersonalInfoScreenState extends State<AddPersonalInfoScreen> {
-  final TextEditingController _emailController = TextEditingController();
-
-  final TextEditingController _passwordController = TextEditingController();
+  final AuthController _authController = Get.find<AuthController>();
+  final UserModel userModel = Get.find<AuthController>().userData.value;
 
   final TextEditingController _nameController = TextEditingController();
 
@@ -37,27 +36,48 @@ class _AddPersonalInfoScreenState extends State<AddPersonalInfoScreen> {
   }
 
   @override
+  void initState() {
+    // TODO: implement initState
+    _nameController.text = userModel.name!;
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.only(bottom: 30.0, left: 20, right: 20),
         child: CommonElevatedButton(
-          onPressed: () {
-            Get.to(() => const PostOnBoardingScreen());
+          onPressed: () async {
+            if (pickedFile != null) {
+              await _authController.editProfile(userModel.id!.toString(),
+                  _nameController.text, pickedFile!.path);
+            } else {
+              await _authController.editProfile(
+                  userModel.id!.toString(), _nameController.text, null);
+            }
           },
-          label: 'Continue',
+          label: 'Update',
         ),
       ),
       appBar: AppBar(
         actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-            },
-            child: const Text(
-              'SKIP',
-              style: TextStyle(color: Color(0xFFD7D5D5)),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            child: TextButton(
+              onPressed: () {
+                _authController.signOut();
+              },
+              style: TextButton.styleFrom(
+                backgroundColor: Colors.red, // Red color
+              ),
+              child: const Text(
+                'Log out',
+                style: TextStyle(
+                  color: Colors.white,
+                ),
+              ),
             ),
           ),
         ],
@@ -84,19 +104,17 @@ class _AddPersonalInfoScreenState extends State<AddPersonalInfoScreen> {
                   _pickImageFromGallery();
                 },
                 child: Container(
-                  height: 159,
-                  width: 159,
-                  decoration: const BoxDecoration(shape: BoxShape.circle),
-                  child: pickedFile != null
-                      ? ClipOval(
-                          child: Image.file(
-                            File(pickedFile!.path),
-                            fit: BoxFit
-                                .fill, // Use BoxFit.fill to fill the entire container
-                          ),
-                        )
-                      : Image.asset(Assets.imagesImagePick),
-                ),
+                    height: 159,
+                    width: 159,
+                    decoration: const BoxDecoration(shape: BoxShape.circle),
+                    child: pickedFile != null
+                        ? ClipOval(
+                            child: Image.file(
+                              File(pickedFile!.path),
+                              fit: BoxFit.fill,
+                            ),
+                          )
+                        : CircleImage(imageUrl: userModel.image!)),
               ),
             ),
             Padding(
@@ -115,33 +133,33 @@ class _AddPersonalInfoScreenState extends State<AddPersonalInfoScreen> {
                   ),
                   const SizedBox(height: 15),
                   CommonTextField(
-                    label: 'Name',
-                    controller: _nameController,
-                    hintText: 'Name',
+                    label: 'Gender',
+                    controller: TextEditingController(text: userModel.gender),
+                    hintText: 'Gender',
+                    readOnly: true,
                     onChanged: (value) {
                       setState(() {});
                     },
-                    validator: (value) => CustomValidator.isEmpty(value),
                   ),
                   const SizedBox(height: 15),
                   CommonTextField(
-                    label: 'Name',
-                    controller: _nameController,
-                    hintText: 'Name',
+                    label: 'City',
+                    controller: TextEditingController(text: userModel.city),
+                    hintText: 'City',
+                    readOnly: true,
                     onChanged: (value) {
                       setState(() {});
                     },
-                    validator: (value) => CustomValidator.isEmpty(value),
                   ),
                   const SizedBox(height: 15),
                   CommonTextField(
-                    label: 'Name',
-                    controller: _nameController,
-                    hintText: 'Name',
+                    label: 'Phone',
+                    controller: TextEditingController(text: userModel.phone),
+                    hintText: 'Phone',
+                    readOnly: true,
                     onChanged: (value) {
                       setState(() {});
                     },
-                    validator: (value) => CustomValidator.isEmpty(value),
                   ),
                   const SizedBox(height: 15),
                 ],

@@ -1,5 +1,6 @@
-import 'package:durood_app/constants/app_colors.dart';
 import 'package:flutter/material.dart';
+
+import 'app_colors.dart';
 
 class CommonElevatedButton extends StatelessWidget {
   final VoidCallback onPressed;

@@ -81,7 +81,8 @@ class CustomDialogBox {
                                       elevation: 2,
                                       backgroundColor: Colors.white,
                                       side: const BorderSide(
-                                          color: AppColors.accentColor, width: 1.5),
+                                          color: AppColors.accentColor,
+                                          width: 1.5),
                                       fixedSize: Size(100.w, 5.h),
                                     ),
                                     onPressed: btnNoPressed,
@@ -145,19 +146,19 @@ class CustomDialogBox {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 4),
+                          const Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 4),
                             child: FittedBox(
                               fit: BoxFit.contain,
                               child: Text(
                                 'Please enter your password',
                                 // 'Are you sure you want to apply this class',
-                                style: const TextStyle(
+                                style: TextStyle(
                                     fontSize: 12, fontWeight: FontWeight.bold),
                               ),
                             ),
                           ),
-                          SizedBox(
+                          const SizedBox(
                             height: 10,
                           ),
                           Container(
@@ -175,7 +176,7 @@ class CustomDialogBox {
                                   controller: requiredPasswordController,
                                   cursorColor: Colors.grey,
                                   decoration: InputDecoration(
-                                    focusedBorder: OutlineInputBorder(
+                                    focusedBorder: const OutlineInputBorder(
                                         borderSide:
                                             BorderSide(color: Colors.black)),
                                     hintText: 'Password',
@@ -193,7 +194,7 @@ class CustomDialogBox {
                               ),
                             ),
                           ),
-                          SizedBox(
+                          const SizedBox(
                             height: 10,
                           ),
                           Row(
@@ -328,7 +329,10 @@ class CustomDialogBox {
     );
   }
 
-  static showSuccessDialog({description = ''}) {
+  static showSuccessDialog({
+    description = '',
+    Function? onPressed,
+  }) {
     Get.dialog(
       Dialog(
         child: SizedBox(
@@ -337,26 +341,29 @@ class CustomDialogBox {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
-                  decoration: const BoxDecoration(
-                    borderRadius: BorderRadius.only(
-                        bottomLeft: Radius.circular(10),
-                        bottomRight: Radius.circular(10),
-                        topRight: Radius.circular(0),
-                        topLeft: Radius.circular(0)),
-                    color: AppColors.accentColor,
+                decoration: const BoxDecoration(
+                  borderRadius: BorderRadius.only(
+                    bottomLeft: Radius.circular(10),
+                    bottomRight: Radius.circular(10),
+                    topRight: Radius.circular(0),
+                    topLeft: Radius.circular(0),
                   ),
-                  height: 15.h,
-                  child: Column(
-                    children: [
-                      SizedBox(
-                        height: 15.h,
-                        child: Center(
-                          child: Lottie.asset(
-                              'assets/animations/congratulations.json'),
+                  color: AppColors.accentColor,
+                ),
+                height: 15.h,
+                child: Column(
+                  children: [
+                    SizedBox(
+                      height: 15.h,
+                      child: Center(
+                        child: Lottie.asset(
+                          'assets/animations/congratulations.json',
                         ),
-                      )
-                    ],
-                  )),
+                      ),
+                    )
+                  ],
+                ),
+              ),
               Expanded(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -364,9 +371,10 @@ class CustomDialogBox {
                     Center(
                       child: Text(
                         description,
-                        // 'Are you sure you want to apply this class',
                         style: const TextStyle(
-                            fontSize: 14, fontWeight: FontWeight.bold),
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
                     Padding(
@@ -377,13 +385,20 @@ class CustomDialogBox {
                           elevation: 2,
                           backgroundColor: Colors.white,
                           side: const BorderSide(
-                              color: AppColors.accentColor, width: 1.5),
+                            color: AppColors.accentColor,
+                            width: 1.5,
+                          ),
                           fixedSize: const Size(80, 13),
                         ),
                         onPressed: () {
-                          if (Get.isDialogOpen!) {
-                            Get.back();
-                            Get.back();
+                          if (onPressed != null) {
+                            onPressed();
+                          } else {
+                            // Default behavior (close the dialog)
+                            if (Get.isDialogOpen!) {
+                              Get.back();
+                              Get.back();
+                            }
                           }
                         },
                         child: const Center(

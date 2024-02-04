@@ -10,9 +10,6 @@ import '../controllers/auth_controller.dart';
 import 'api_exceptions.dart';
 import 'api_urls.dart';
 
-// This is the DataApiService class. It contains two methods, get and post, to access the api
-// for both information retrieval and data updates. There is also a helper method named _processResponse
-// which determines which response to send based on the response code received from the api.
 class DataApiService {
   DataApiService._();
 
@@ -43,46 +40,58 @@ class DataApiService {
   }
 
   //POST
-  Future<dynamic> post(
-    String api,
-    dynamic body, {
-    List<String> multiPartList = const [],
-  }) async {
+  Future<dynamic> post(String api, dynamic body,
+      {List<String> multiPartList = const []}) async {
+    print("uri");
+    print(api);
     Uri uri = Uri.parse(BASE_URL + api);
+    print("uri");
+    print(uri);
+    AuthController authController = Get.find();
+
     try {
+      var headers = {
+        "Authorization": "Bearer ${authController.accessToken.value}",
+      };
+
       if (multiPartList.isNotEmpty) {
-        var headers = {
-          "Authorization": "Bearer ${authController.accessToken.value}",
-        };
-        var request = http.MultipartRequest('POST', uri);
-        request.fields.addAll(body);
-        for (int i = 0; i < multiPartList.length; i++) {
-          request.files.add(
-              await http.MultipartFile.fromPath('files[]', multiPartList[i]));
-        }
-        request.headers.addAll(headers);
-
-        http.StreamedResponse response = await request.send();
-
-        return _processResponse(response, multipart: true);
+        return _postMultipart(uri, headers, body, multiPartList);
       } else {
-        http.Response response = await http
-            .post(
-              uri,
-              headers: {
-                "Authorization": "Bearer ${authController.accessToken.value}",
-              },
-              body: body,
-            )
-            .timeout(const Duration(seconds: TIME_OUT_DURATION));
-        return utf8.decode(response.bodyBytes);
+        return _postRegular(uri, headers, body);
       }
     } on SocketException {
       throw FetchDataException('No Internet connection', uri.toString());
     } on TimeoutException {
       throw ApiNotRespondingException(
           'API not responded in time', uri.toString());
+    } catch (e) {
+      throw FetchDataException('Unexpected error occurred', uri.toString());
     }
+  }
+
+  Future<dynamic> _postRegular(
+      Uri uri, Map<String, String> headers, dynamic body) async {
+    var response = await http
+        .post(uri, headers: headers, body: body)
+        .timeout(const Duration(seconds: TIME_OUT_DURATION));
+    print("response");
+    print(response.body);
+    return _processResponse(response);
+  }
+
+  Future<dynamic> _postMultipart(Uri uri, Map<String, String> headers,
+      dynamic body, List<String> multiPartList) async {
+    var request = http.MultipartRequest('POST', uri);
+    request.headers.addAll(headers);
+    request.fields.addAll(body);
+
+    for (int i = 0; i < multiPartList.length; i++) {
+      request.files
+          .add(await http.MultipartFile.fromPath('files[]', multiPartList[i]));
+    }
+
+    var response = await request.send();
+    return _processResponse(response, multipart: true);
   }
 
   // Helper method that determines response based on response code

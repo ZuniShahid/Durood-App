@@ -1,11 +1,13 @@
 import 'package:auto_size_text_field/auto_size_text_field.dart';
-import 'package:durood_app/constants/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:sizer/sizer.dart';
 
+import '../../constants/app_colors.dart';
 import '../../constants/circle_image.dart';
 import '../../constants/next_button.dart';
+import '../../controllers/auth_controller.dart';
+import '../../controllers/room_controller.dart';
 
 class CreateCustomRoom extends StatefulWidget {
   const CreateCustomRoom({super.key});
@@ -18,6 +20,25 @@ class _CreateCustomRoomState extends State<CreateCustomRoom> {
   final TextEditingController _textEditingController = TextEditingController();
   final TextEditingController _counterController =
       TextEditingController(text: '0');
+  final TextEditingController _totalParticipants =
+      TextEditingController(text: '0');
+
+  final RoomController _roomController = Get.put(RoomController());
+
+  Future<void> createRoom() async {
+    try {
+      await _roomController.createRoom(
+        groupName: _textEditingController.text,
+        adminName: Get.find<AuthController>().userData.value.name!,
+        totalParticipants: _totalParticipants.text,
+        target: _counterController.text,
+      );
+      // Optionally, handle success or navigate to the next screen
+    } catch (error) {
+      print('Error creating room: $error');
+      rethrow;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +46,9 @@ class _CreateCustomRoomState extends State<CreateCustomRoom> {
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.only(bottom: 30.0, left: 20, right: 20),
         child: CommonElevatedButton(
-          onPressed: () {},
+          onPressed: () async {
+            await createRoom();
+          },
           label: 'Create',
         ),
       ),
@@ -75,12 +98,13 @@ class _CreateCustomRoomState extends State<CreateCustomRoom> {
               style: TextStyle(color: AppColors.textGrey, fontSize: 16),
             ),
             const SizedBox(height: 10),
-            const ListTile(
+            ListTile(
               contentPadding: EdgeInsets.zero,
               leading: CircleImage(
-                  imageUrl: 'imageUrl', placeHolderColor: Color(0xFFB1B1EB)),
+                  imageUrl: Get.find<AuthController>().userData.value.image!,
+                  placeHolderColor: Color(0xFFB1B1EB)),
               title: Text(
-                'Rashid Khan',
+                Get.find<AuthController>().userData.value.name!,
                 style: TextStyle(color: Colors.black, fontSize: 16),
               ),
               subtitle: Text(
@@ -151,6 +175,31 @@ class _CreateCustomRoomState extends State<CreateCustomRoom> {
             const Text(
               '🔴 Target Salawat represents the total number of Salawat you aim to deliver in this group. '
               'Use the +/- buttons to set your desired count.',
+              style: TextStyle(color: AppColors.textGrey, fontSize: 14),
+            ),
+            const SizedBox(height: 20),
+            const Text(
+              'Total Participants',
+              style: TextStyle(color: AppColors.textGrey, fontSize: 16),
+            ),
+            const SizedBox(height: 10),
+            Container(
+              margin: const EdgeInsets.symmetric(horizontal: 8),
+              child: TextField(
+                controller: _totalParticipants,
+                keyboardType: TextInputType.number,
+                textAlign: TextAlign.center,
+                onChanged: (value) {
+                  setState(() {});
+                },
+                decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
+                ),
+              ),
+            ),
+            const SizedBox(height: 40),
+            const Text(
+              '🔴 Total Participants represents the total number of Participants you aim to add in this group. ',
               style: TextStyle(color: AppColors.textGrey, fontSize: 14),
             ),
           ],

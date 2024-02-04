@@ -11,6 +11,8 @@ class CommonTextField extends StatefulWidget {
   final String? Function(String?)? validator;
   final bool isPassword;
   final bool isRequired;
+  final TextInputType textInputType;
+  final bool readOnly;
 
   const CommonTextField({
     super.key,
@@ -21,6 +23,8 @@ class CommonTextField extends StatefulWidget {
     this.validator,
     this.isPassword = false,
     this.isRequired = false,
+    this.textInputType = TextInputType.text,
+    this.readOnly = false,
   });
 
   @override
@@ -50,6 +54,8 @@ class _CommonTextFieldState extends State<CommonTextField> {
               controller: widget.controller,
               validator: widget.validator,
               cursorColor: AppColors.accentColor,
+              keyboardType: widget.textInputType,
+              readOnly: widget.readOnly,
               decoration: InputDecorations.inputDecorationAllBorder(
                 hintText: widget.hintText,
               ).copyWith(

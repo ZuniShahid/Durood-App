@@ -1,11 +1,12 @@
-import 'package:durood_app/constants/app_colors.dart';
-import 'package:durood_app/views/home/bottom_nav_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:sizer/sizer.dart';
 
+import '../../../constants/app_colors.dart';
 import '../../../constants/next_button.dart';
+import '../../../constants/page_navigation.dart';
 import '../../../generated/assets.dart';
+import '../../home/bottom_nav_bar.dart';
 
 class PostOnBoardingScreen extends StatelessWidget {
   const PostOnBoardingScreen({super.key});
@@ -73,7 +74,7 @@ class PostOnBoardingScreen extends StatelessWidget {
                     const EdgeInsets.only(bottom: 30.0, left: 20, right: 20),
                 child: CommonElevatedButton(
                   onPressed: () {
-                    Get.offAll(() => const BottomNavBar());
+                    Go.offUntil(() => const BottomNavBar());
                   },
                   label: 'Continue',
                 ),

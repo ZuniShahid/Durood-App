@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:share_plus/share_plus.dart';
 
 import '../../../constants/app_colors.dart';
 
@@ -70,17 +71,22 @@ class SalwatCardWidget extends StatelessWidget {
                             fontWeight: FontWeight.bold, color: Colors.black),
                       ),
                     ),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 8),
-                      decoration: BoxDecoration(
-                        color: secondaryButtonColor ?? AppColors.secondary,
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Text(
-                        secondaryLabelText,
-                        style: const TextStyle(
-                            fontWeight: FontWeight.bold, color: Colors.black),
+                    GestureDetector(
+                      onTap: () {
+                        Share.share('here will be the link of app');
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 8),
+                        decoration: BoxDecoration(
+                          color: secondaryButtonColor ?? AppColors.secondary,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Text(
+                          secondaryLabelText,
+                          style: const TextStyle(
+                              fontWeight: FontWeight.bold, color: Colors.black),
+                        ),
                       ),
                     ),
                   ],

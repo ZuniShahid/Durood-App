@@ -6,10 +6,10 @@ import '../../constants/app_colors.dart';
 import '../../constants/common_text_field.dart';
 import '../../constants/custom_validators.dart';
 import '../../constants/next_button.dart';
+import '../../constants/page_navigation.dart';
 import '../../controllers/auth_controller.dart';
 import '../../generated/assets.dart';
 import 'forgot_password.dart';
-import 'post_login/enable_notification.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -38,9 +38,7 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Widget singleSpace() {
-    return const SizedBox(
-      height: 10,
-    );
+    return const SizedBox(height: 10);
   }
 
   Column _innerBody() {
@@ -49,6 +47,7 @@ class _LoginScreenState extends State<LoginScreen> {
         CommonTextField(
           label: 'Email',
           controller: idController,
+          textInputType: TextInputType.emailAddress,
           hintText: 'Email',
           onChanged: (value) {
             setState(() {});
@@ -77,13 +76,13 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  void _loginButtonPressed() {
+  Future<void> _loginButtonPressed() async {
     var body = {
       'email': idController.text,
       'password': passwordController.text,
     };
 
-    _authController.userLogin(body);
+    await _authController.userLogin(body);
   }
 
   @override
@@ -135,7 +134,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     _innerBody(),
                     CommonElevatedButton(
                       onPressed: () {
-                        Get.to(() => EnableNotificationScreen());
+                        // Go.to(() => const EnableNotificationScreen());
                         if (_formKey.currentState!.validate()) {
                           _loginButtonPressed();
                         }
@@ -144,7 +143,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     TextButton(
                       onPressed: () {
-                        Get.to(() => ForgotPassword());
+                        Go.to(() => ForgotPassword());
                       },
                       child: const Text(
                         'Forgot Password?',
@@ -155,49 +154,49 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ),
                     singleSpace(),
-                    TextButton(
-                      onPressed: () {},
-                      child: const Text(
-                        'or continue with',
-                        style: TextStyle(
-                          fontSize: 17,
-                          color: AppColors.textGrey,
-                        ),
-                      ),
-                    ),
-                    singleSpace(),
-                    TextButton(
-                      onPressed: () {
-                        // GoogleAuthenticateProvider().signIn(true);
-                      },
-                      child: Container(
-                        height: 60,
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFF1F1F1),
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Center(
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Image.asset(
-                                Assets.imagesGoogleIcon,
-                                height: 25,
-                                width: 25,
-                              ),
-                              const SizedBox(width: 15),
-                              const Text(
-                                'Sign in with Google',
-                                style: TextStyle(
-                                  color: AppColors.textOverWhite,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                    singleSpace(),
+                    // TextButton(
+                    //   onPressed: () {},
+                    //   child: const Text(
+                    //     'or continue with',
+                    //     style: TextStyle(
+                    //       fontSize: 17,
+                    //       color: AppColors.textGrey,
+                    //     ),
+                    //   ),
+                    // ),
+                    // singleSpace(),
+                    // TextButton(
+                    //   onPressed: () {
+                    //     // GoogleAuthenticateProvider().signIn(true);
+                    //   },
+                    //   child: Container(
+                    //     height: 60,
+                    //     decoration: BoxDecoration(
+                    //       color: const Color(0xFFF1F1F1),
+                    //       borderRadius: BorderRadius.circular(10),
+                    //     ),
+                    //     child: Center(
+                    //       child: Row(
+                    //         mainAxisAlignment: MainAxisAlignment.center,
+                    //         children: [
+                    //           Image.asset(
+                    //             Assets.imagesGoogleIcon,
+                    //             height: 25,
+                    //             width: 25,
+                    //           ),
+                    //           const SizedBox(width: 15),
+                    //           const Text(
+                    //             'Sign in with Google',
+                    //             style: TextStyle(
+                    //               color: AppColors.textOverWhite,
+                    //             ),
+                    //           ),
+                    //         ],
+                    //       ),
+                    //     ),
+                    //   ),
+                    // ),
+                    // singleSpace(),
                     const AlreadyHaveAnAccountCheck(
                       login: true,
                     ),

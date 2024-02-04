@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 import '../../constants/app_colors.dart';
 import '../../constants/common_text_field.dart';
@@ -6,17 +7,28 @@ import '../../constants/custom_validators.dart';
 import '../../constants/next_button.dart';
 import '../../controllers/auth_controller.dart';
 
-class ForgotPassword extends StatelessWidget {
-  ForgotPassword({super.key});
+class ResetPassword extends StatefulWidget {
+  final String email;
+  final String otp;
 
-  final TextEditingController _emailController = TextEditingController();
+  const ResetPassword({super.key, required this.email, required this.otp});
 
-  final AuthController _authController = AuthController();
-  final _formKey = GlobalKey<FormState>();
+  @override
+  State<ResetPassword> createState() => _ResetPasswordState();
+}
+
+class _ResetPasswordState extends State<ResetPassword> {
+  final AuthController _authController = Get.find<AuthController>();
+  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
+
+  final GlobalKey<FormState> key = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.background,
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Colors.transparent,
@@ -30,19 +42,18 @@ class ForgotPassword extends StatelessWidget {
           ),
         ),
       ),
-      backgroundColor: AppColors.background,
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0),
           child: Form(
-            key: _formKey,
+            key: key,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const SizedBox(height: 186),
                 const Text(
-                  'Forgot password',
+                  'Reset password',
                   style: TextStyle(
                     color: Colors.black,
                     fontSize: 24,
@@ -50,10 +61,10 @@ class ForgotPassword extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 10),
-                Align(
+                const Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
-                    "Enter your email address, we will send you code to reset your password.",
+                    "Set your new password to login into your account!",
                     style: TextStyle(
                       color: AppColors.textGrey,
                       fontSize: 16,
@@ -63,23 +74,41 @@ class ForgotPassword extends StatelessWidget {
                 ),
                 const SizedBox(height: 40),
                 CommonTextField(
-                  label: 'Email',
-                  textInputType: TextInputType.emailAddress,
-                  controller: _emailController,
-                  hintText: 'Enter your email',
+                  label: 'New Password',
+                  controller: _passwordController,
+                  isPassword: true,
+                  hintText: 'Enter new password',
                   onChanged: (value) {},
-                  validator: (value) => CustomValidator.email(value),
+                  validator: (value) => CustomValidator.password(value),
+                  isRequired: false,
+                ),
+                const SizedBox(height: 20),
+                CommonTextField(
+                  label: 'Confirm Password',
+                  controller: _confirmPasswordController,
+                  isPassword: true,
+                  hintText: 'Confirm you password',
+                  onChanged: (value) {},
+                  validator: (value) => CustomValidator.confirmPassword(
+                    value,
+                    _passwordController.text,
+                  ),
                   isRequired: false,
                 ),
                 const SizedBox(height: 40),
                 CommonElevatedButton(
                   onPressed: () {
-                    if (_formKey.currentState!.validate()) {
-                      var body = {'email': _emailController.text};
-                      _authController.forgotPassword(body);
+                    if (key.currentState!.validate()) {
+                      var body = {
+                        'email': widget.email,
+                        'otp': widget.otp,
+                        'new_password': _passwordController.text,
+                      };
+                      print(body);
+                      _authController.resetPassword(body);
                     }
                   },
-                  label: 'Get password reset email',
+                  label: 'Confirm',
                 ),
               ],
             ),

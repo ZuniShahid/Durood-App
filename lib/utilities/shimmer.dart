@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import 'package:shimmer/shimmer.dart';
 
 import '../constants/circle_image.dart';
@@ -43,20 +42,20 @@ class ShimmerAnnouncementCard extends StatelessWidget {
                         borderRadius: BorderRadius.all(Radius.circular(5)),
                         color: Colors.grey, // Shimmer color
                       ),
-                      child: Text(
+                      child: const Text(
                         'New',
-                        style: const TextStyle(
-                            fontSize: 8, color: Colors.transparent),
+                        style:
+                            TextStyle(fontSize: 8, color: Colors.transparent),
                       ),
                     ),
                   ),
-                  Row(
+                  const Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       CircleImage(
                         imageUrl: '',
                       ),
-                      const SizedBox(width: 16),
+                      SizedBox(width: 16),
                       Flexible(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -68,7 +67,7 @@ class ShimmerAnnouncementCard extends StatelessWidget {
                                 color: Colors.transparent, // Shimmer color
                               ),
                             ),
-                            const SizedBox(height: 8),
+                            SizedBox(height: 8),
                             Text(
                               'Loading...',
                               style: TextStyle(
@@ -82,7 +81,7 @@ class ShimmerAnnouncementCard extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: 8),
-                  Row(
+                  const Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       Text(
@@ -92,7 +91,7 @@ class ShimmerAnnouncementCard extends StatelessWidget {
                           color: Colors.transparent, // Shimmer color
                         ),
                       ),
-                      const SizedBox(width: 30),
+                      SizedBox(width: 30),
                       Text(
                         'Loading...',
                         style: TextStyle(

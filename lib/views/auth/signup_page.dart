@@ -20,10 +20,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final AuthController _authController = Get.find<AuthController>();
 
   bool checkboxValue = false;
-  final TextEditingController idController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
   bool isLoading = false;
   bool loader = false;
   final TextEditingController passwordController = TextEditingController();
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _genderController = TextEditingController();
+  final TextEditingController _cityController = TextEditingController();
+  final TextEditingController _phoneController = TextEditingController();
 
   final _formKey = GlobalKey<FormState>();
   final bool _isValidate = false;
@@ -45,8 +49,19 @@ class _SignUpScreenState extends State<SignUpScreen> {
     return Column(
       children: <Widget>[
         CommonTextField(
+          label: 'Name',
+          controller: _nameController,
+          hintText: 'Name',
+          onChanged: (value) {
+            setState(() {});
+          },
+          validator: (value) => CustomValidator.isEmpty(value),
+        ),
+        const SizedBox(height: 10),
+        CommonTextField(
           label: 'Email',
-          controller: idController,
+          controller: _emailController,
+          textInputType: TextInputType.emailAddress,
           hintText: 'Email',
           onChanged: (value) {
             setState(() {});
@@ -70,6 +85,38 @@ class _SignUpScreenState extends State<SignUpScreen> {
           },
           isPassword: true,
         ),
+        singleSpace(),
+        CommonTextField(
+          label: 'Gender',
+          controller: _genderController,
+          hintText: 'Gender',
+          onChanged: (value) {
+            setState(() {});
+          },
+          validator: (value) => CustomValidator.isEmpty(value),
+        ),
+        singleSpace(),
+        CommonTextField(
+          label: 'City',
+          controller: _cityController,
+          hintText: 'City',
+          onChanged: (value) {
+            setState(() {});
+          },
+          validator: (value) => CustomValidator.isEmpty(value),
+        ),
+        singleSpace(),
+        CommonTextField(
+          textInputType: TextInputType.phone,
+          label: 'Phone Number',
+          controller: _phoneController,
+          hintText: 'Phone Number',
+          onChanged: (value) {
+            setState(() {});
+          },
+          validator: (value) => CustomValidator.isEmpty(value),
+        ),
+        singleSpace(),
         doubleSpace(),
       ],
     );
@@ -77,11 +124,18 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   void _loginButtonPressed() {
     var body = {
-      'email': idController.text,
+      'name': _nameController.text,
+      'email': _emailController.text,
       'password': passwordController.text,
+      'city': _cityController.text,
+      'phone': _phoneController.text,
+      'gender': _genderController.text,
     };
 
-    _authController.userLogin(body);
+    var otpBody = {'email': _emailController.text, 'otp': '1'};
+
+    _authController.verifyOtp(otpBody, body);
+    // _authController.signUp(body);
   }
 
   @override
@@ -94,7 +148,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
           child: Column(
             children: [
               Container(
-                height: 150,
+                height: 100,
                 width: double.infinity,
                 decoration: const BoxDecoration(
                   image: DecorationImage(
@@ -121,7 +175,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     const Align(
                       alignment: Alignment.centerLeft,
                       child: Text(
-                        'Login',
+                        'Create a new account',
                         style: TextStyle(
                           color: Colors.black,
                           fontSize: 24,
@@ -140,48 +194,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       label: 'Sign Up',
                     ),
                     singleSpace(),
-                    TextButton(
-                      onPressed: () {},
-                      child: const Text(
-                        'or continue with',
-                        style: TextStyle(
-                          fontSize: 17,
-                          color: AppColors.textGrey,
-                        ),
-                      ),
-                    ),
-                    singleSpace(),
-                    TextButton(
-                      onPressed: () {
-                        // GoogleAuthenticateProvider().signIn(true);
-                      },
-                      child: Container(
-                        height: 60,
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFF1F1F1),
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Center(
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Image.asset(
-                                Assets.imagesGoogleIcon,
-                                height: 25,
-                                width: 25,
-                              ),
-                              const SizedBox(width: 15),
-                              const Text(
-                                'Sign in with Google',
-                                style: TextStyle(
-                                  color: AppColors.textOverWhite,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
                     singleSpace(),
                     const AlreadyHaveAnAccountCheck(
                       login: false,

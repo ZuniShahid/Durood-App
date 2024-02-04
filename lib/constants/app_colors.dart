@@ -9,6 +9,8 @@ class AppColors {
   static const textWhiteImg = Color(0xFFFFFFFF);
   static const GreyLightButton = Color(0xFFF1F1F1);
 
+  static const borderColor = Color(0xFF50E3C2);
+
   static const Gradient gradient =
       LinearGradient(colors: [Color(0xFFEFAFA9), Color(0xFF5B3DDE)]);
 }

@@ -1,6 +1,8 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
+
+import '../generated/assets.dart';
 import 'app_colors.dart';
 
 class CircleImage extends StatefulWidget {
@@ -11,13 +13,12 @@ class CircleImage extends StatefulWidget {
   final Color? placeBorderColor;
 
   const CircleImage(
-      {Key? key,
+      {super.key,
       required this.imageUrl,
       this.width,
       this.height,
       this.placeHolderColor,
-      this.placeBorderColor})
-      : super(key: key);
+      this.placeBorderColor});
 
   @override
   State<CircleImage> createState() => _CircleImageState();
@@ -34,6 +35,7 @@ class _CircleImageState extends State<CircleImage> {
         width: widget.width ?? 5.h,
         height: widget.height ?? 5.h,
         fit: BoxFit.cover,
+        placeholder: (c, e) => const Center(child: CircularProgressIndicator()),
         errorWidget: (context, url, error) => SizedBox(
           width: widget.width ?? 5.h,
           height: widget.height ?? 5.h,
@@ -44,10 +46,8 @@ class _CircleImageState extends State<CircleImage> {
               color: AppColors.secondary,
               shape: BoxShape.circle,
             ),
-            child: Icon(
-              size: widget.height,
-              Icons.person,
-              color: widget.placeHolderColor ?? AppColors.accentColor,
+            child: Image.asset(
+              Assets.imagesUserPlaceholder,
             ),
           ),
         ),

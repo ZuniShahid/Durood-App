@@ -4,8 +4,9 @@ import 'package:sizer/sizer.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 import '../../constants/app_colors.dart';
-import '../../generated/assets.dart';
 import '../../constants/next_button.dart';
+import '../../constants/page_navigation.dart';
+import '../../generated/assets.dart';
 import '../auth/login_page.dart';
 
 class OnboardingScreen extends StatefulWidget {
@@ -151,7 +152,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 curve: Curves.easeInOut,
               );
             } else {
-              Get.offAll(() => const LoginScreen());
+              Go.offUntil(() => const LoginScreen());
               // Handle last page navigation or completion
             }
           },

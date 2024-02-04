@@ -21,38 +21,38 @@ class VoiceSelectionWidget extends StatelessWidget {
       height: 25,
       width: 100.w,
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        mainAxisAlignment: MainAxisAlignment.start,
         children: List.generate(
           voices.length,
           (index) {
             final voice = voices[index];
             final isSelected = voice == selectedVoice;
 
-            return GestureDetector(
-              onTap: () {
-                onVoiceSelected(voice);
-              },
-              child: Container(
-                padding: const EdgeInsets.symmetric(
-                  vertical: 4,
-                  horizontal: 8,
-                ),
-                decoration: BoxDecoration(
-                  color: index == voices.length - 1
-                      ? AppColors.accentColor
-                      : Colors.transparent,
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(
-                    color: index == voices.length - 1
-                        ? AppColors.accentColor
-                        : Colors.grey,
+            return Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+              child: GestureDetector(
+                onTap: () {
+                  onVoiceSelected(voice);
+                },
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 4,
+                    horizontal: 8,
                   ),
-                ),
-                child: Text(
-                  voice,
-                  style: TextStyle(
-                    fontWeight:
-                        isSelected ? FontWeight.bold : FontWeight.normal,
+                  decoration: BoxDecoration(
+                    color:
+                        isSelected ? AppColors.accentColor : Colors.transparent,
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(
+                      color: isSelected ? AppColors.accentColor : Colors.grey,
+                    ),
+                  ),
+                  child: Text(
+                    voice,
+                    style: TextStyle(
+                      fontWeight:
+                          isSelected ? FontWeight.bold : FontWeight.normal,
+                    ),
                   ),
                 ),
               ),
