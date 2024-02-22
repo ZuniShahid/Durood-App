@@ -23,9 +23,7 @@ class RoomController extends GetxController {
     isLoading.value = true;
     _baseController.showLoading('Fetching Group Details');
     final Map<String, dynamic> requestBody = {'group_id': groupId};
-    final response = await DataApiService.instance
-        .post('rooms/details', requestBody)
-        .catchError((error) {
+    final response = await DataApiService.instance.post('rooms/details', requestBody).catchError((error) {
       if (error is BadRequestException) {
         return error.message!;
       } else {
@@ -58,9 +56,7 @@ class RoomController extends GetxController {
       'total_participants': totalParticipants,
       'target': target,
     };
-    var response = await DataApiService.instance
-        .post('rooms/create', requestBody)
-        .catchError((error) {
+    var response = await DataApiService.instance.post('rooms/create', requestBody).catchError((error) {
       if (error is BadRequestException) {
         return error.message!;
       } else {
@@ -83,13 +79,32 @@ class RoomController extends GetxController {
   Future<void> addParticipantToRoom(String userId, String groupId) async {
     try {
       isLoading.value = true;
-      final Map<String, dynamic> requestBody = {
-        'user_id': userId,
-        'group_id': groupId
-      };
+      final Map<String, dynamic> requestBody = {'user_id': userId, 'group_id': groupId};
       await DataApiService.instance.post('rooms/add/user', requestBody);
     } catch (error) {
       print('Error adding participant to room: $error');
+      rethrow;
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  Future<void> increaseCount(String groupId) async {
+    try {
+      isLoading.value = true;
+      final Map<String, dynamic> requestBody = {'group_id': groupId};
+      var response = await DataApiService.instance.post('rooms/salawat/post', requestBody);
+      if (response == null) return;
+
+      var result = json.decode(response);
+      print(result);
+
+      if (!result['Error']) {
+        int newCount = int.parse(result['Completed_target'].toString());
+        roomModel.value = roomModel.value.setCompletedTarget(newCount);
+      }
+    } catch (error) {
+      print('Error increasing target count: $error');
       rethrow;
     } finally {
       isLoading.value = false;
@@ -100,7 +115,16 @@ class RoomController extends GetxController {
     try {
       isLoading.value = true;
       final Map<String, dynamic> requestBody = {'group_id': groupId};
-      await DataApiService.instance.post('rooms/salawat/post', requestBody);
+      var response = await DataApiService.instance.post('rooms/stats', requestBody);
+      if (response == null) return;
+
+      var result = json.decode(response);
+      print(result);
+
+      if (!result['Error']) {
+        int newCount = int.parse(result['Completed_target'].toString());
+        roomModel.value = roomModel.value.setCompletedTarget(newCount);
+      }
     } catch (error) {
       print('Error increasing target count: $error');
       rethrow;

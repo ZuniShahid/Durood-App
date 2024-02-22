@@ -35,8 +35,7 @@ class RoomModel {
       adminName: adminName ?? this.adminName,
       allowedParticipants: allowedParticipants ?? this.allowedParticipants,
       addedParticipants: addedParticipants ?? this.addedParticipants,
-      addedParticipantsCount:
-          addedParticipantsCount ?? this.addedParticipantsCount,
+      addedParticipantsCount: addedParticipantsCount ?? this.addedParticipantsCount,
       groupTarget: groupTarget ?? this.groupTarget,
       completedTarget: completedTarget ?? this.completedTarget,
     );
@@ -46,6 +45,10 @@ class RoomModel {
     return copyWith(completedTarget: (completedTarget ?? 0) + 1);
   }
 
+  RoomModel setCompletedTarget(int newCompletedTarget) {
+    return copyWith(completedTarget: newCompletedTarget);
+  }
+
   factory RoomModel.fromJson(Map<String, dynamic> json) => RoomModel(
         groupId: json["group_id"],
         groupName: json["group_name"],
@@ -53,8 +56,7 @@ class RoomModel {
         allowedParticipants: json["allowed_participants"] ?? '',
         addedParticipants: json["added_participants"] == null
             ? []
-            : List<AddedParticipant>.from(json["added_participants"]!
-                .map((x) => AddedParticipant.fromJson(x))),
+            : List<AddedParticipant>.from(json["added_participants"]!.map((x) => AddedParticipant.fromJson(x))),
         addedParticipantsCount: json["added_participants_count"] ?? 0,
         groupTarget: json["group_target"] ?? 0,
         completedTarget: json["completed_target"] ?? 0,
@@ -65,9 +67,8 @@ class RoomModel {
         "group_name": groupName,
         "admin_name": adminName,
         "allowed_participants": allowedParticipants,
-        "added_participants": addedParticipants == null
-            ? []
-            : List<dynamic>.from(addedParticipants!.map((x) => x.toJson())),
+        "added_participants":
+            addedParticipants == null ? [] : List<dynamic>.from(addedParticipants!.map((x) => x.toJson())),
         "added_participants_count": addedParticipantsCount,
         "group_target": groupTarget,
         "completed_target": completedTarget,
@@ -105,8 +106,7 @@ class AddedParticipant {
     this.imagePath,
   });
 
-  factory AddedParticipant.fromJson(Map<String, dynamic> json) =>
-      AddedParticipant(
+  factory AddedParticipant.fromJson(Map<String, dynamic> json) => AddedParticipant(
         id: json["id"],
         name: json["name"],
         email: json["email"],
@@ -117,13 +117,9 @@ class AddedParticipant {
         verified: json["verified"],
         otp: json["otp"],
         image: json["image"],
-        createdAt: json["created_at"] == null
-            ? null
-            : DateTime.parse(json["created_at"]),
-        updatedAt: json["updated_at"] == null
-            ? null
-            : DateTime.parse(json["updated_at"]),
-        imagePath: json["image_path"],
+        createdAt: json["created_at"] == null ? null : DateTime.parse(json["created_at"]),
+        updatedAt: json["updated_at"] == null ? null : DateTime.parse(json["updated_at"]),
+        imagePath: json["image_path"] ?? '',
       );
 
   Map<String, dynamic> toJson() => {

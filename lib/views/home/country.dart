@@ -1,11 +1,11 @@
+import 'dart:convert';
+
 import 'package:durood_app/controllers/auth_controller.dart';
-import 'package:durood_app/generated/assets.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
-import 'dart:convert';
 
-import 'package:sizer/sizer.dart';
+import '../../constants/no_data_widget.dart';
 
 class CountriesShownScreen extends StatefulWidget {
   @override
@@ -20,9 +20,8 @@ class _CountriesShownScreenState extends State<CountriesShownScreen> {
       "Authorization": "Bearer ${_authController.accessToken.value}",
     };
 
-    var response = await http.get(
-        Uri.parse('https://eramsaeed.com/Durood-App/api/salawat/countries'),
-        headers: headers);
+    var response =
+        await http.get(Uri.parse('https://eramsaeed.com/Durood-App/api/salawat/countries'), headers: headers);
 
     if (response.statusCode == 200) {
       return json.decode(response.body);
@@ -38,18 +37,17 @@ class _CountriesShownScreenState extends State<CountriesShownScreen> {
         centerTitle: false,
         title: const Text(
           'Durood',
-          style: TextStyle(
-              color: Colors.black, fontSize: 24, fontWeight: FontWeight.bold),
+          style: TextStyle(color: Colors.black, fontSize: 24, fontWeight: FontWeight.bold),
         ),
       ),
       body: Column(
         children: [
-          Image.asset(
-            Assets.imagesAfrica,
-            height: 100.w,
-            width: 100.w,
-            fit: BoxFit.fill,
-          ),
+          // Image.asset(
+          //   Assets.imagesAfrica,
+          //   height: 100.w,
+          //   width: 100.w,
+          //   fit: BoxFit.cover,
+          // ),
           Expanded(
             child: FutureBuilder<Map<String, dynamic>>(
               future: fetchData(),
@@ -62,12 +60,19 @@ class _CountriesShownScreenState extends State<CountriesShownScreen> {
                   if (data['Error'] == false) {
                     Map<String, dynamic> countriesData = data['data'];
 
+                    if (countriesData.isEmpty) {
+                      return const Center(
+                        child: NoDataWidget(
+                          text: 'No data available.',
+                        ),
+                      );
+                    }
+
                     return ListView.builder(
                       padding: const EdgeInsets.all(24.0),
                       itemCount: countriesData.length,
                       itemBuilder: (context, index) {
-                        String countryName =
-                            countriesData.keys.elementAt(index);
+                        String countryName = countriesData.keys.elementAt(index);
                         int count = countriesData[countryName];
 
                         return ListTile(
@@ -95,9 +100,7 @@ class _CountriesShownScreenState extends State<CountriesShownScreen> {
                       },
                     );
                   } else {
-                    return Center(
-                        child:
-                            Text('API returned an error: ${data['Message']}'));
+                    return Center(child: Text('API returned an error: ${data['Message']}'));
                   }
                 }
               },

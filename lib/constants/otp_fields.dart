@@ -18,7 +18,6 @@ class OtpField extends StatefulWidget {
 class _OtpFieldState extends State<OtpField> {
   @override
   void dispose() {
-    // TODO: implement dispose
     widget.otpController.dispose();
     super.dispose();
   }
@@ -57,18 +56,10 @@ class _OtpFieldState extends State<OtpField> {
       cursorColor: AppColors.accentColor,
       animationDuration: const Duration(milliseconds: 300),
       enableActiveFill: true,
-      // errorAnimationController: errorController,
-      // controller: textEditingController,
       keyboardType: TextInputType.number,
       onCompleted: (v) {},
       onChanged: (value) {
-        if (value.isNotEmpty) {
-          // setState(() {
-          //   currentText = value;
-          //   error = "";
-          //   hasError = false;
-          // });
-        }
+        if (value.isNotEmpty) {}
       },
       beforeTextPaste: (text) {
         print("Allowing to paste $text");

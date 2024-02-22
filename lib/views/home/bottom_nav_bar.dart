@@ -21,7 +21,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
   int _currentIndex = 0;
 
   final List<Widget> _screens = [
-    HomePage(),
+    const HomePage(),
     const PickVoicesScreen(),
     const SpirtualVideoScreen(),
     const AddPersonalInfoScreen(),
@@ -41,7 +41,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
               TextButton(
                 onPressed: () {
                   Navigator.of(context).pop(true);
-                  // Close the app
+
                   if (Platform.isAndroid) {
                     SystemNavigator.pop();
                   } else if (Platform.isIOS) {
@@ -77,19 +77,21 @@ class _BottomNavBarState extends State<BottomNavBar> {
             _buildNavItem('Profile', Assets.imagesUser, 3),
           ],
         ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (context) => const CreateCustomRoom(),
-              ),
-            );
-          },
-          child: const Icon(
-            Icons.add,
-            color: Colors.black,
-          ),
-        ),
+        floatingActionButton: _currentIndex == 0
+            ? FloatingActionButton(
+                onPressed: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => const CreateCustomRoom(),
+                    ),
+                  );
+                },
+                child: const Icon(
+                  Icons.add,
+                  color: Colors.black,
+                ),
+              )
+            : null,
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       ),
     );

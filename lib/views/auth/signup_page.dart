@@ -1,3 +1,4 @@
+import 'package:country_picker/country_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -25,13 +26,16 @@ class _SignUpScreenState extends State<SignUpScreen> {
   bool loader = false;
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _genderController = TextEditingController();
-  final TextEditingController _cityController = TextEditingController();
+  final TextEditingController _cityController = TextEditingController(text: 'Pakistan');
   final TextEditingController _phoneController = TextEditingController();
 
   final _formKey = GlobalKey<FormState>();
   final bool _isValidate = false;
   bool rememberMe = false;
+
+  String _selectedGender = 'Male';
+
+  final List<String> _genders = ['Male', 'Female', 'Other'];
 
   Widget doubleSpace() {
     return const SizedBox(
@@ -86,24 +90,75 @@ class _SignUpScreenState extends State<SignUpScreen> {
           isPassword: true,
         ),
         singleSpace(),
-        CommonTextField(
-          label: 'Gender',
-          controller: _genderController,
-          hintText: 'Gender',
-          onChanged: (value) {
-            setState(() {});
-          },
-          validator: (value) => CustomValidator.isEmpty(value),
+        Container(
+          height: 60,
+          decoration: BoxDecoration(
+            border: Border.all(color: AppColors.textGrey),
+            borderRadius: BorderRadius.circular(6),
+          ),
+          child: Row(
+            children: [
+              const SizedBox(
+                width: 20,
+              ),
+              Expanded(
+                child: DropdownButtonFormField<String>(
+                  decoration: const InputDecoration(
+                    labelText: 'Gender',
+                    hintText: 'Select Gender',
+                    border: InputBorder.none,
+                  ),
+                  value: _selectedGender,
+                  onChanged: (value) {
+                    setState(() {
+                      _selectedGender = value!;
+                    });
+                  },
+                  items: _genders.map((String gender) {
+                    return DropdownMenuItem<String>(
+                      value: gender,
+                      child: Text(gender),
+                    );
+                  }).toList(),
+                ),
+              ),
+              const SizedBox(
+                width: 13,
+              ),
+            ],
+          ),
         ),
         singleSpace(),
-        CommonTextField(
-          label: 'City',
-          controller: _cityController,
-          hintText: 'City',
-          onChanged: (value) {
-            setState(() {});
+        GestureDetector(
+          onTap: () {
+            showCountryPicker(
+              context: context,
+              onSelect: (Country value) {
+                _cityController.text = value.name;
+                setState(() {});
+              },
+            );
           },
-          validator: (value) => CustomValidator.isEmpty(value),
+          child: Container(
+            height: 60,
+            decoration: BoxDecoration(
+              border: Border.all(color: AppColors.textGrey),
+              borderRadius: BorderRadius.circular(6),
+            ),
+            child: Row(
+              children: [
+                const SizedBox(
+                  width: 20,
+                ),
+                Expanded(
+                  child: Text(_cityController.text),
+                ),
+                const SizedBox(
+                  width: 13,
+                ),
+              ],
+            ),
+          ),
         ),
         singleSpace(),
         CommonTextField(
@@ -129,13 +184,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
       'password': passwordController.text,
       'city': _cityController.text,
       'phone': _phoneController.text,
-      'gender': _genderController.text,
+      'gender': _selectedGender,
     };
 
     var otpBody = {'email': _emailController.text, 'otp': '1'};
 
     _authController.verifyOtp(otpBody, body);
-    // _authController.signUp(body);
   }
 
   @override

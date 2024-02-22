@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:auto_size_text_field/auto_size_text_field.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -29,11 +31,19 @@ class _CustomRoomDetailState extends State<CustomRoomDetail> {
   void initState() {
     super.initState();
     _fetchRoomDetails();
+    callFunctionEvery30Seconds();
+  }
+
+  void callFunctionEvery30Seconds() {
+    Timer.periodic(const Duration(seconds: 15), (Timer timer) {
+      // Call the function here
+      _roomController.increaseTargetCount(_roomController.roomModel.value.groupId.toString());
+      _updateUI();
+    });
   }
 
   void _fetchRoomDetails() async {
     try {
-      // await _roomController.getRoomDetails(widget.roomId);
       _updateUI();
     } catch (error) {
       print('Error fetching room details: $error');
@@ -41,14 +51,14 @@ class _CustomRoomDetailState extends State<CustomRoomDetail> {
   }
 
   void _updateUI() {
-    final completedTarget =
-        _roomController.roomModel.value.completedTarget ?? 0;
+    final completedTarget = _roomController.roomModel.value.completedTarget ?? 0;
     final groupTarget = _roomController.roomModel.value.groupTarget ?? 0;
-
+    print("completedTarget");
+    print(completedTarget);
+    print(groupTarget);
     valueNotifier = ValueNotifier(completedTarget / groupTarget * 100.0);
 
-    _textEditingController.text =
-        _roomController.roomModel.value.groupName ?? '';
+    _textEditingController.text = _roomController.roomModel.value.groupName ?? '';
 
     if (mounted) {
       setState(() {});
@@ -63,25 +73,21 @@ class _CustomRoomDetailState extends State<CustomRoomDetail> {
         padding: const EdgeInsets.all(32.0),
         child: CommonElevatedButton(
           onPressed: () {
-            if (_roomController.roomModel.value.completedTarget! <
-                _roomController.roomModel.value.groupTarget!) {
-              _roomController.increaseTargetCount(widget.roomId);
-              _roomController.incrementCompletedTarget();
+            if (_roomController.roomModel.value.completedTarget! < _roomController.roomModel.value.groupTarget!) {
+              _roomController.increaseCount(_roomController.roomModel.value.groupId.toString());
+              _roomController.increaseTargetCount(_roomController.roomModel.value.groupId.toString());
               _updateUI(); // Update UI to reflect the new value
             } else {
-              // Handle the case where the target is already reached
-              // You can show a message or take appropriate action.
               print('Target already reached!');
             }
           },
-          label: _roomController.roomModel.value.completedTarget! <
-                  _roomController.roomModel.value.groupTarget!
+          label: _roomController.roomModel.value.completedTarget! < _roomController.roomModel.value.groupTarget!
               ? 'Add'
               : 'Target already reached!',
-          backgroundColor: _roomController.roomModel.value.completedTarget! <
-                  _roomController.roomModel.value.groupTarget!
-              ? AppColors.accentColor
-              : AppColors.secondary,
+          backgroundColor:
+              _roomController.roomModel.value.completedTarget! < _roomController.roomModel.value.groupTarget!
+                  ? AppColors.accentColor
+                  : AppColors.secondary,
           textColor: Colors.white,
         ),
       ),
@@ -201,19 +207,19 @@ class _CustomRoomDetailState extends State<CustomRoomDetail> {
             const SizedBox(height: 10),
             Row(
               children: [
-                if (_roomController
-                    .roomModel.value.addedParticipants!.isNotEmpty)
-                  for (int i = 0;
-                      i <
-                              _roomController
-                                  .roomModel.value.addedParticipants!.length &&
-                          i < 3;
-                      i++)
+                if (_roomController.roomModel.value.addedParticipants!.isNotEmpty)
+                  for (int i = 0; i < _roomController.roomModel.value.addedParticipants!.length && i < 3; i++)
                     Padding(
                       padding: const EdgeInsets.all(8.0),
-                      child: CircleImage(
-                          imageUrl: _roomController
-                              .roomModel.value.addedParticipants![i].image),
+                      child: SizedBox(
+                        width: 6.h,
+                        child: Column(
+                          children: [
+                            CircleImage(imageUrl: _roomController.roomModel.value.addedParticipants![i].imagePath!),
+                            Text(_roomController.roomModel.value.addedParticipants![i].name!),
+                          ],
+                        ),
+                      ),
                     ),
                 if (_roomController.roomModel.value.addedParticipants!.isEmpty)
                   const Text(

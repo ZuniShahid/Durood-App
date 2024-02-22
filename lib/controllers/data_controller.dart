@@ -1,16 +1,16 @@
 import 'dart:convert';
 
+import 'package:durood_app/controllers/auth_controller.dart';
 import 'package:get/get.dart';
 
 import '../api_services/data_api.dart';
 import '../constants/page_navigation.dart';
 import '../models/home_room_model.dart';
-import '../models/voice_model.dart';
 import '../views/home/pick_voices.dart';
 
 class DataController extends GetxController {
   RxBool isLoading = false.obs;
-  RxList<VoiceModel> topVoices = <VoiceModel>[].obs;
+  RxList<HomeVoiceModel> topVoices = <HomeVoiceModel>[].obs;
   RxInt currentSalawatCount = 0.obs;
   RxInt globalSalawatCount = 0.obs;
   RxList<HomeRoomModel> groups = <HomeRoomModel>[].obs;
@@ -19,7 +19,6 @@ class DataController extends GetxController {
 
   void handleVoiceSelected(String voice) {
     if (voice == 'Custom') {
-      // Handle the case when the user selects 'Custom'
       Go.to(() => const PickVoicesScreen());
     } else {
       selectedVoice.value = voice;
@@ -30,7 +29,6 @@ class DataController extends GetxController {
     try {
       isLoading.value = true;
 
-      // Fetching data from the 'home' endpoint
       var homeData = await DataApiService.instance.get('home');
       handleSuccess(homeData);
     } catch (error) {
@@ -40,28 +38,57 @@ class DataController extends GetxController {
     }
   }
 
+  Future<void> fetchGroupsData() async {
+    try {
+      var homeData = await DataApiService.instance.get('home');
+      handleGroupsSuccess(homeData);
+    } catch (error) {
+      handleError(error);
+    } finally {}
+  }
+
   void handleSuccess(String? homeData) {
     if (homeData != null) {
       var homeResult = json.decode(homeData);
+      print("homeResult");
+      print(homeResult);
 
-      // Extracting data from the JSON response
       if (!homeResult['Error']) {
-        topVoices.assignAll(List.from(homeResult['Top_voices'])
-            .map((item) => VoiceModel.fromJson(item)));
+        topVoices.assignAll(List.from(homeResult['Top_voices']).map((item) => HomeVoiceModel.fromJson(item)));
         currentSalawatCount.value = homeResult['Current_salawat_count'];
         globalSalawatCount.value = homeResult['Global_salawat_count'];
-        groups.assignAll(List.from(homeResult['groups'])
-            .map((item) => HomeRoomModel.fromJson(item)));
-      } else {
-        // Handle error if needed
-        // CustomDialogBox.showErrorDialog(description: homeResult["Message"]);
-      }
+        groups.assignAll(List.from(homeResult['groups']).map((item) => HomeRoomModel.fromJson(item)));
+      } else {}
+    }
+  }
+
+  void handleGroupsSuccess(String? homeData) {
+    if (homeData != null) {
+      var homeResult = json.decode(homeData);
+
+      if (!homeResult['Error']) {
+        groups.assignAll(List.from(homeResult['groups']).map((item) => HomeRoomModel.fromJson(item)));
+      } else {}
     }
   }
 
   void handleError(dynamic error) {
-    // Handle generic error
-    // Log the error or show a user-friendly message
     print('Error: $error');
+  }
+
+  Future<void> increaseTargetCount() async {
+    try {
+      final Map<String, dynamic> requestBody = {'user_id': Get.find<AuthController>().userData.value.id.toString()};
+      var response = await DataApiService.instance.post('salawat/post', requestBody);
+      var res = json.decode(response);
+      print("result");
+      print(res);
+      if (!res['Error']) {
+        globalSalawatCount.value = int.parse(res["Global_Salawat_count"].toString());
+      }
+    } catch (error) {
+      print('Error increasing target count: $error');
+      rethrow;
+    } finally {}
   }
 }

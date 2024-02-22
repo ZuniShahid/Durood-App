@@ -4,10 +4,22 @@ import 'package:just_audio/just_audio.dart';
 import '../constants/app_colors.dart';
 import 'audio_common.dart';
 
-class TwoOptCtrls extends StatelessWidget {
+class TwoOptCtrls extends StatefulWidget {
   final AudioPlayer player;
+  final ReloadCallback onReload;
 
-  const TwoOptCtrls(this.player, {super.key});
+  const TwoOptCtrls(this.player, {super.key, required this.onReload});
+
+  @override
+  State<TwoOptCtrls> createState() => _TwoOptCtrlsState();
+}
+
+class _TwoOptCtrlsState extends State<TwoOptCtrls> {
+  @override
+  void dispose() {
+    widget.player.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -15,7 +27,7 @@ class TwoOptCtrls extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         StreamBuilder<PlayerState>(
-          stream: player.playerStateStream,
+          stream: widget.player.playerStateStream,
           builder: (context, snapshot) {
             final playerState = snapshot.data;
             final processingState = playerState?.processingState;
@@ -35,16 +47,26 @@ class TwoOptCtrls extends StatelessWidget {
                   color: Colors.black,
                   size: 32.0,
                 ),
-                onPressed: player.play,
+                onPressed: widget.player.play,
               );
-            } else if (processingState != ProcessingState.completed) {
+            } else if (processingState != ProcessingState.completed &&
+                processingState != ProcessingState.idle) {
               return IconButton(
                 icon: const Icon(
                   Icons.pause,
                   color: Colors.black,
                   size: 32.0,
                 ),
-                onPressed: player.pause,
+                onPressed: widget.player.pause,
+              );
+            } else if (processingState == ProcessingState.idle) {
+              return IconButton(
+                icon: const Icon(
+                  Icons.error,
+                  color: Colors.black,
+                  size: 32.0,
+                ),
+                onPressed: widget.onReload,
               );
             } else {
               return IconButton(
@@ -53,7 +75,7 @@ class TwoOptCtrls extends StatelessWidget {
                   color: Colors.black,
                   size: 32.0,
                 ),
-                onPressed: () => player.seek(Duration.zero),
+                onPressed: () => widget.player.seek(Duration.zero),
               );
             }
           },
@@ -71,9 +93,9 @@ class TwoOptCtrls extends StatelessWidget {
               divisions: 10,
               min: 0.0,
               max: 1.0,
-              value: player.volume,
-              stream: player.volumeStream,
-              onChanged: player.setVolume,
+              value: widget.player.volume,
+              stream: widget.player.volumeStream,
+              onChanged: widget.player.setVolume,
             );
           },
         ),
@@ -82,11 +104,20 @@ class TwoOptCtrls extends StatelessWidget {
   }
 }
 
-class ThreeOptCtrls extends StatelessWidget {
+typedef ReloadCallback = void Function();
+
+class ThreeOptCtrls extends StatefulWidget {
   final AudioPlayer player;
+  final ReloadCallback onReload;
 
-  const ThreeOptCtrls(this.player, {super.key});
+  const ThreeOptCtrls(this.player, {required this.onReload, Key? key})
+      : super(key: key);
 
+  @override
+  State<ThreeOptCtrls> createState() => _ThreeOptCtrlsState();
+}
+
+class _ThreeOptCtrlsState extends State<ThreeOptCtrls> {
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -108,9 +139,10 @@ class ThreeOptCtrls extends StatelessWidget {
             decoration: const BoxDecoration(
                 color: AppColors.accentColor, shape: BoxShape.circle),
             child: StreamBuilder<PlayerState>(
-              stream: player.playerStateStream,
+              stream: widget.player.playerStateStream,
               builder: (context, snapshot) {
                 final playerState = snapshot.data;
+
                 final processingState = playerState?.processingState;
                 final playing = playerState?.playing;
                 if (processingState == ProcessingState.loading ||
@@ -128,16 +160,26 @@ class ThreeOptCtrls extends StatelessWidget {
                       color: Colors.white,
                       size: 56.0,
                     ),
-                    onPressed: player.play,
+                    onPressed: widget.player.play,
                   );
-                } else if (processingState != ProcessingState.completed) {
+                } else if (processingState != ProcessingState.completed &&
+                    processingState != ProcessingState.idle) {
                   return IconButton(
                     icon: const Icon(
                       Icons.pause,
                       color: Colors.white,
                       size: 56.0,
                     ),
-                    onPressed: player.pause,
+                    onPressed: widget.player.pause,
+                  );
+                } else if (processingState == ProcessingState.idle) {
+                  return IconButton(
+                    icon: const Icon(
+                      Icons.error,
+                      color: Colors.white,
+                      size: 56.0,
+                    ),
+                    onPressed: widget.onReload,
                   );
                 } else {
                   return IconButton(
@@ -146,7 +188,7 @@ class ThreeOptCtrls extends StatelessWidget {
                       color: Colors.white,
                       size: 56.0,
                     ),
-                    onPressed: () => player.seek(Duration.zero),
+                    onPressed: () => widget.player.seek(Duration.zero),
                   );
                 }
               },
@@ -162,25 +204,6 @@ class ThreeOptCtrls extends StatelessWidget {
               seek(const Duration(seconds: 10));
             },
           ),
-          // IconButton(
-          //   icon: const Icon(
-          //     Icons.volume_up,
-          //     color: Colors.black,
-          //     size: 24.0,
-          //   ),
-          //   onPressed: () {
-          //     showSliderDialog(
-          //       context: context,
-          //       title: "Adjust volume",
-          //       divisions: 10,
-          //       min: 0.0,
-          //       max: 1.0,
-          //       value: player.volume,
-          //       stream: player.volumeStream,
-          //       onChanged: player.setVolume,
-          //     );
-          //   },
-          // ),
         ],
       ),
     );
@@ -188,11 +211,17 @@ class ThreeOptCtrls extends StatelessWidget {
 
   void seek(Duration offset) {
     try {
-      final newPosition = player.position + offset;
-      player.seek(newPosition);
+      final newPosition = widget.player.position + offset;
+      widget.player.seek(newPosition);
     } catch (e) {
-      // Handle errors here (e.g., log, display an error message)
       print("Error while seeking: $e");
     }
+  }
+
+  @override
+  void dispose() {
+    widget.player
+        .dispose(); // Dispose of the player when the widget is disposed
+    super.dispose();
   }
 }

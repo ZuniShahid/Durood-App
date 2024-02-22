@@ -44,15 +44,14 @@ class _WaveformSeekBarState extends State<WaveformSeekBar> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Container(
+        SizedBox(
           height: 100,
           child: Stack(
             children: [
-              // Background Image with Gray Color Overlay
               Container(
                 width: double.infinity,
                 height: double.infinity,
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                   image: DecorationImage(
                     image: AssetImage(Assets.imagesAudiowave),
                     fit: BoxFit.cover,
@@ -63,8 +62,6 @@ class _WaveformSeekBarState extends State<WaveformSeekBar> {
                   ),
                 ),
               ),
-
-              // Background Track (Gray)
               SliderTheme(
                 data: _sliderThemeData.copyWith(
                   activeTrackColor: Colors.grey,
@@ -74,13 +71,11 @@ class _WaveformSeekBarState extends State<WaveformSeekBar> {
                   max: widget.duration.inMilliseconds.toDouble(),
                   value: widget.position.inMilliseconds.toDouble(),
                   onChanged: (value) {
-                    // Allow changing the position by dragging the background
                     if (widget.onChanged != null) {
                       widget.onChanged!(Duration(milliseconds: value.round()));
                     }
                   },
                   onChangeEnd: (value) {
-                    // Handle change end for the background track
                     if (widget.onChangeEnd != null) {
                       widget
                           .onChangeEnd!(Duration(milliseconds: value.round()));
@@ -88,8 +83,6 @@ class _WaveformSeekBarState extends State<WaveformSeekBar> {
                   },
                 ),
               ),
-
-              // Foreground Track (Colored)
               SliderTheme(
                 data: _sliderThemeData,
                 child: Slider(
@@ -119,8 +112,7 @@ class _WaveformSeekBarState extends State<WaveformSeekBar> {
             ],
           ),
         ),
-        SizedBox(height: 8),
-        // The existing text widget for displaying remaining time
+        const SizedBox(height: 8),
         Text(
           RegExp(r'((^0*[1-9]\d*:)?\d{2}:\d{2})\.\d+$')
                   .firstMatch("$_remaining")

@@ -21,9 +21,9 @@ class VoiceSelectionWidget extends StatelessWidget {
       height: 25,
       width: 100.w,
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: List.generate(
-          voices.length,
+          voices.length > 4 ? 4 : voices.length,
           (index) {
             final voice = voices[index];
             final isSelected = voice == selectedVoice;

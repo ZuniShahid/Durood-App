@@ -36,7 +36,6 @@ class _OTPScreenState extends State<OTPScreen> {
 
   @override
   void initState() {
-    // TODO: implement initState
     currentOtpCode = widget.otpCode;
     super.initState();
   }

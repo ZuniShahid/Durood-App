@@ -1,11 +1,13 @@
 import 'dart:convert';
 
 import 'package:durood_app/constants/app_colors.dart';
+import 'package:durood_app/utilities/widgets/custom_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../api_services/data_api.dart';
 import '../../constants/circle_image.dart';
+import '../../constants/no_data_widget.dart';
 import '../../models/voice_model.dart';
 import '../../services/audio_common.dart';
 import '../../services/audio_player_service.dart';
@@ -32,7 +34,6 @@ class _PickVoicesScreenState extends State<PickVoicesScreen> {
 
   @override
   void dispose() {
-    // TODO: implement dispose
     audioPlayerService.dispose();
     super.dispose();
   }
@@ -64,10 +65,6 @@ class _PickVoicesScreenState extends State<PickVoicesScreen> {
 
         setState(() {
           voices = voicesList;
-          if (voices.isNotEmpty) {
-            selectedVoice = voices[0];
-            playVoice(selectedVoice!.file!);
-          }
           isLoading = false;
         });
       } else {
@@ -82,26 +79,6 @@ class _PickVoicesScreenState extends State<PickVoicesScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // appBar: AppBar(
-      //   centerTitle: true,
-      //   leading: IconButton(
-      //     onPressed: () => Get.back(),
-      //     icon: const Icon(Icons.arrow_back, color: Colors.black),
-      //   ),
-      //   actions: [
-      //     Padding(
-      //       padding: const EdgeInsets.only(right: 16.0),
-      //       child: SizedBox(
-      //         width: 100,
-      //         height: 34,
-      //         child: ElevatedButton(
-      //           onPressed: () => Go.to(() => const CreateCustomRoom()),
-      //           child: const Text('Custom Room'),
-      //         ),
-      //       ),
-      //     ),
-      //   ],
-      // ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -125,54 +102,69 @@ class _PickVoicesScreenState extends State<PickVoicesScreen> {
                   ? const Center(
                       child: CircularProgressIndicator(),
                     )
-                  : GridView.builder(
-                      padding: const EdgeInsets.symmetric(vertical: 20),
-                      itemCount: voices.length,
-                      physics: const BouncingScrollPhysics(),
-                      gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 3,
-                        childAspectRatio: 0.8,
-                        crossAxisSpacing: 8,
-                        mainAxisSpacing: 16,
-                      ),
-                      itemBuilder: (context, index) => GestureDetector(
-                        onTap: () {
-                          playVoice(voices[index].file!);
-                          setState(() {
-                            selectedVoice = voices[index];
-                          });
-                        },
-                        child: Container(
-                          padding: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                              color: const Color(0xFFF5F1F1),
-                              borderRadius: BorderRadius.circular(12),
-                              border: Border.all(
-                                  color: selectedVoice == voices[index]
-                                      ? AppColors.accentColor
-                                      : Colors.transparent)),
-                          child: Column(
-                            children: [
-                              const SizedBox(height: 10),
-                              const CircleImage(imageUrl: 'imageUrl'),
-                              const SizedBox(height: 10),
-                              Text(
-                                voices[index].name!,
-                                style: const TextStyle(
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.w600,
-                                    fontSize: 14),
-                                overflow: TextOverflow.ellipsis,
-                                maxLines: 3,
-                                textAlign: TextAlign.center,
+                  : voices.isEmpty
+                      ? const Center(
+                          child: NoDataWidget(
+                            text: 'No voices available.',
+                          ),
+                        )
+                      : GridView.builder(
+                          padding: const EdgeInsets.symmetric(vertical: 20),
+                          itemCount: voices.length,
+                          physics: const BouncingScrollPhysics(),
+                          gridDelegate:
+                              const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 3,
+                            childAspectRatio: 0.8,
+                            crossAxisSpacing: 8,
+                            mainAxisSpacing: 16,
+                          ),
+                          itemBuilder: (context, index) => GestureDetector(
+                            onTap: () {
+                              if (voices[index].voice != null &&
+                                  voices[index].voice!.file != null) {
+                                playVoice(voices[index].voice!.file! ?? '');
+                              } else {
+                                CustomToast.errorToast(
+                                    message:
+                                        'Salawaats not found for the selected voice.');
+                              }
+                              setState(() {
+                                selectedVoice = voices[index];
+                              });
+                            },
+                            child: Container(
+                              padding: const EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                  color: const Color(0xFFF5F1F1),
+                                  borderRadius: BorderRadius.circular(12),
+                                  border: Border.all(
+                                      color: selectedVoice == voices[index]
+                                          ? AppColors.accentColor
+                                          : Colors.transparent)),
+                              child: Column(
+                                children: [
+                                  const SizedBox(height: 10),
+                                  CircleImage(
+                                      imageUrl:
+                                          voices[index].voice!.photo! ?? ''),
+                                  const SizedBox(height: 10),
+                                  Text(
+                                    voices[index].voice!.name!,
+                                    style: const TextStyle(
+                                        color: Colors.black,
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: 14),
+                                    overflow: TextOverflow.ellipsis,
+                                    maxLines: 3,
+                                    textAlign: TextAlign.center,
+                                  ),
+                                  const SizedBox(height: 10),
+                                ],
                               ),
-                              const SizedBox(height: 10),
-                            ],
+                            ),
                           ),
                         ),
-                      ),
-                    ),
             ),
             const SizedBox(height: 30),
             Container(
@@ -188,15 +180,15 @@ class _PickVoicesScreenState extends State<PickVoicesScreen> {
                     padding: const EdgeInsets.only(left: 18.0, top: 8),
                     child: Row(
                       children: [
-                        const CircleImage(
-                          imageUrl: '',
+                        CircleImage(
+                          imageUrl: selectedVoice?.voice?.photo ?? '',
                         ),
                         const SizedBox(width: 8),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              selectedVoice?.name ?? '',
+                              selectedVoice?.voice?.name ?? '',
                               style: const TextStyle(
                                 fontWeight: FontWeight.bold,
                               ),
@@ -204,7 +196,20 @@ class _PickVoicesScreenState extends State<PickVoicesScreen> {
                           ],
                         ),
                         const Spacer(),
-                        TwoOptCtrls(audioPlayerService.player),
+                        TwoOptCtrls(
+                          audioPlayerService.player,
+                          onReload: () {
+                            if (selectedVoice != null &&
+                                selectedVoice!.voice != null &&
+                                selectedVoice!.voice!.file != null) {
+                              playVoice(selectedVoice!.voice!.file! ?? '');
+                            } else {
+                              CustomToast.errorToast(
+                                  message:
+                                      'Salawaats not found for this voice. Please choose another.');
+                            }
+                          },
+                        ),
                       ],
                     ),
                   ),
@@ -235,6 +240,8 @@ class _PickVoicesScreenState extends State<PickVoicesScreen> {
   }
 
   void playVoice(String voiceUrl) {
+    print("voiceUrl");
+    print(voiceUrl);
     audioPlayerService.init(voiceUrl);
     audioPlayerService.play();
   }

@@ -35,6 +35,12 @@ class _CommonTextFieldState extends State<CommonTextField> {
   bool _obscureText = true;
 
   @override
+  void dispose() {
+    widget.controller.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Container(
       height: 60,
@@ -59,6 +65,7 @@ class _CommonTextFieldState extends State<CommonTextField> {
               decoration: InputDecorations.inputDecorationAllBorder(
                 hintText: widget.hintText,
               ).copyWith(
+                labelText: widget.label,
                 suffixIcon: widget.isPassword
                     ? InkWell(
                         onTap: () {

@@ -1,7 +1,6 @@
 import 'package:durood_app/utilities/widgets/custom_toast.dart';
 import 'package:durood_app/views/home/bottom_nav_bar.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:sizer/sizer.dart';
 
@@ -9,7 +8,6 @@ import '../../../constants/app_colors.dart';
 import '../../../constants/next_button.dart';
 import '../../../constants/page_navigation.dart';
 import '../../../generated/assets.dart';
-import 'add_personal_info.dart';
 import 'post_login_onboarding.dart';
 
 class EnableNotificationScreen extends StatelessWidget {

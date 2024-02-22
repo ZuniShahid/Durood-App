@@ -1,7 +1,10 @@
 import 'dart:convert';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:durood_app/constants/no_data_widget.dart';
+import 'package:durood_app/controllers/auth_controller.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:sizer/sizer.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -18,13 +21,14 @@ class SpirtualVideoScreen extends StatefulWidget {
 }
 
 class _SpirtualVideoScreenState extends State<SpirtualVideoScreen> {
+  AuthController authController = Get.find();
+
   Future<List<EramSpirtualVideoModel>> fetchVideoList() async {
-    final String apiUrl = 'https://eramsaeed.com/Durood-App/api/videos/eram';
+    const String apiUrl = 'https://eramsaeed.com/Durood-App/api/videos/eram';
 
     try {
       var headers = {
-        'Authorization':
-            'Bearer 17|7cyxONDcWIskohqm8Xs1YUkOPoHRisIQRkiVcTV9c59576f8',
+        "Authorization": "Bearer ${authController.accessToken.value}",
       };
 
       var response = await http.get(
@@ -38,9 +42,8 @@ class _SpirtualVideoScreenState extends State<SpirtualVideoScreen> {
         if (jsonResponse['Error'] == false) {
           List<dynamic> videosData = jsonResponse['Videos'];
 
-          List<EramSpirtualVideoModel> videos = videosData
-              .map((videoJson) => EramSpirtualVideoModel.fromJson(videoJson))
-              .toList();
+          List<EramSpirtualVideoModel> videos =
+              videosData.map((videoJson) => EramSpirtualVideoModel.fromJson(videoJson)).toList();
 
           return videos;
         } else {
@@ -60,6 +63,16 @@ class _SpirtualVideoScreenState extends State<SpirtualVideoScreen> {
     if (!await launchUrl(_url)) {
       throw Exception('Could not launch $_url');
     }
+  }
+
+  Color getColorForIndex(int index) {
+    List<Color> colors = [
+      const Color(0xFF6DD3CE),
+      const Color(0xFF8367C7),
+      const Color(0xFF85CB33),
+      const Color(0xFF5DA9E9),
+    ];
+    return colors[index % colors.length];
   }
 
   @override
@@ -102,7 +115,7 @@ class _SpirtualVideoScreenState extends State<SpirtualVideoScreen> {
                 ),
               ],
             ),
-            const SizedBox(height: 40),
+            const SizedBox(height: 30),
             FutureBuilder<List<EramSpirtualVideoModel>>(
               future: fetchVideoList(),
               builder: (context, snapshot) {
@@ -116,11 +129,8 @@ class _SpirtualVideoScreenState extends State<SpirtualVideoScreen> {
                     ),
                   );
                 } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                  return const Center(
-                    child: Text(
-                      'No videos available.',
-                      style: TextStyle(color: Colors.grey),
-                    ),
+                  return const NoDataWidget(
+                    text: 'No Video Available',
                   );
                 } else {
                   List<EramSpirtualVideoModel> videos = snapshot.data!;
@@ -131,22 +141,33 @@ class _SpirtualVideoScreenState extends State<SpirtualVideoScreen> {
                       itemCount: videos.length,
                       itemBuilder: (context, index) {
                         EramSpirtualVideoModel video = videos[index];
+                        Color cardColor = getColorForIndex(index);
+                        print("video.video");
+                        print(video.video);
                         return Padding(
                           padding: const EdgeInsets.symmetric(vertical: 8.0),
                           child: GestureDetector(
                             onTap: () => _launchUrl(video.video! ?? ''),
                             child: Container(
-                              padding: const EdgeInsets.all(20),
+                              padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 20),
                               decoration: BoxDecoration(
-                                color: const Color(0xFF6DD3CE),
+                                color: cardColor,
                                 borderRadius: BorderRadius.circular(20),
                               ),
                               child: ListTile(
-                                title: Text(video.title ?? ''),
+                                title: Text(
+                                  video.title ?? '',
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w800,
+                                  ),
+                                ),
                                 subtitle: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text(video.description ?? ''),
+                                    Text(
+                                      video.description ?? '',
+                                    ),
                                     const SizedBox(height: 8),
                                     Row(
                                       children: [
@@ -164,7 +185,13 @@ class _SpirtualVideoScreenState extends State<SpirtualVideoScreen> {
                                           ),
                                         ),
                                         const SizedBox(width: 5),
-                                        const Text('Play'),
+                                        const Text(
+                                          'Play',
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w800,
+                                          ),
+                                        ),
                                       ],
                                     ),
                                   ],
@@ -178,14 +205,9 @@ class _SpirtualVideoScreenState extends State<SpirtualVideoScreen> {
                                       imageUrl: video.thumbnail ?? '',
                                       height: 96,
                                       width: 96,
-                                      placeholder: (context, url) =>
-                                          const Center(
-                                              child:
-                                                  CircularProgressIndicator()),
-                                      errorWidget: (context, url, error) =>
-                                          const Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
+                                      placeholder: (context, url) => const Center(child: CircularProgressIndicator()),
+                                      errorWidget: (context, url, error) => const Column(
+                                        mainAxisAlignment: MainAxisAlignment.center,
                                         children: [
                                           Icon(Icons.error, color: Colors.red),
                                           SizedBox(height: 8),
@@ -195,8 +217,7 @@ class _SpirtualVideoScreenState extends State<SpirtualVideoScreen> {
                                               padding: EdgeInsets.all(4.0),
                                               child: Text(
                                                 'Image failed to load, please try again',
-                                                style: TextStyle(
-                                                    color: Colors.red),
+                                                style: TextStyle(color: Colors.red),
                                               ),
                                             ),
                                           ),

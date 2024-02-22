@@ -29,15 +29,13 @@ class _AddPersonalInfoScreenState extends State<AddPersonalInfoScreen> {
   XFile? pickedFile;
 
   _pickImageFromGallery() async {
-    pickedFile =
-        await _picker.pickImage(imageQuality: 50, source: ImageSource.gallery);
+    pickedFile = await _picker.pickImage(imageQuality: 50, source: ImageSource.gallery);
     print(pickedFile!.path);
     setState(() {});
   }
 
   @override
   void initState() {
-    // TODO: implement initState
     _nameController.text = userModel.name!;
     super.initState();
   }
@@ -46,21 +44,6 @@ class _AddPersonalInfoScreenState extends State<AddPersonalInfoScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
-      bottomNavigationBar: Padding(
-        padding: const EdgeInsets.only(bottom: 30.0, left: 20, right: 20),
-        child: CommonElevatedButton(
-          onPressed: () async {
-            if (pickedFile != null) {
-              await _authController.editProfile(userModel.id!.toString(),
-                  _nameController.text, pickedFile!.path);
-            } else {
-              await _authController.editProfile(
-                  userModel.id!.toString(), _nameController.text, null);
-            }
-          },
-          label: 'Update',
-        ),
-      ),
       appBar: AppBar(
         actions: [
           Padding(
@@ -111,7 +94,7 @@ class _AddPersonalInfoScreenState extends State<AddPersonalInfoScreen> {
                         ? ClipOval(
                             child: Image.file(
                               File(pickedFile!.path),
-                              fit: BoxFit.fill,
+                              fit: BoxFit.cover,
                             ),
                           )
                         : CircleImage(imageUrl: userModel.image!)),
@@ -143,9 +126,9 @@ class _AddPersonalInfoScreenState extends State<AddPersonalInfoScreen> {
                   ),
                   const SizedBox(height: 15),
                   CommonTextField(
-                    label: 'City',
+                    label: 'Country',
                     controller: TextEditingController(text: userModel.city),
-                    hintText: 'City',
+                    hintText: 'Country',
                     readOnly: true,
                     onChanged: (value) {
                       setState(() {});
@@ -163,6 +146,20 @@ class _AddPersonalInfoScreenState extends State<AddPersonalInfoScreen> {
                   ),
                   const SizedBox(height: 15),
                 ],
+              ),
+            ),
+            const SizedBox(height: 20),
+            Padding(
+              padding: const EdgeInsets.only(bottom: 30.0, left: 20, right: 20),
+              child: CommonElevatedButton(
+                onPressed: () async {
+                  if (pickedFile != null) {
+                    await _authController.editProfile(userModel.id!.toString(), _nameController.text, pickedFile!.path);
+                  } else {
+                    await _authController.editProfile(userModel.id!.toString(), _nameController.text, null);
+                  }
+                },
+                label: 'Update',
               ),
             ),
           ],

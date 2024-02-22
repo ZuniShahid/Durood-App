@@ -1,3 +1,4 @@
+import 'package:durood_app/generated/assets.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 
@@ -14,7 +15,7 @@ class NoDataWidget extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Lottie.asset("AppAssets.noResults", height: 150),
+        Lottie.asset(Assets.animationsNoResults, height: 150),
         const SizedBox(
           height: 5,
         ),

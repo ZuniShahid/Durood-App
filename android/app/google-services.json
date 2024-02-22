@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "831579053083",
+    "project_id": "es-durood-app",
+    "storage_bucket": "es-durood-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:831579053083:android:974b1ea8c44bb51b39acbe",
+        "android_client_info": {
+          "package_name": "com.example.durood_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBp1mEQjcwfW6cU-JSQ_mpfwlrBOtbQfF4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

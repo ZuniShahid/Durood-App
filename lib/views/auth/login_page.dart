@@ -19,6 +19,12 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  @override
+  void initState() {
+    super.initState();
+    print('object');
+  }
+
   final AuthController _authController = Get.find<AuthController>();
 
   bool checkboxValue = false;
@@ -134,7 +140,6 @@ class _LoginScreenState extends State<LoginScreen> {
                     _innerBody(),
                     CommonElevatedButton(
                       onPressed: () {
-                        // Go.to(() => const EnableNotificationScreen());
                         if (_formKey.currentState!.validate()) {
                           _loginButtonPressed();
                         }
@@ -154,49 +159,6 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ),
                     singleSpace(),
-                    // TextButton(
-                    //   onPressed: () {},
-                    //   child: const Text(
-                    //     'or continue with',
-                    //     style: TextStyle(
-                    //       fontSize: 17,
-                    //       color: AppColors.textGrey,
-                    //     ),
-                    //   ),
-                    // ),
-                    // singleSpace(),
-                    // TextButton(
-                    //   onPressed: () {
-                    //     // GoogleAuthenticateProvider().signIn(true);
-                    //   },
-                    //   child: Container(
-                    //     height: 60,
-                    //     decoration: BoxDecoration(
-                    //       color: const Color(0xFFF1F1F1),
-                    //       borderRadius: BorderRadius.circular(10),
-                    //     ),
-                    //     child: Center(
-                    //       child: Row(
-                    //         mainAxisAlignment: MainAxisAlignment.center,
-                    //         children: [
-                    //           Image.asset(
-                    //             Assets.imagesGoogleIcon,
-                    //             height: 25,
-                    //             width: 25,
-                    //           ),
-                    //           const SizedBox(width: 15),
-                    //           const Text(
-                    //             'Sign in with Google',
-                    //             style: TextStyle(
-                    //               color: AppColors.textOverWhite,
-                    //             ),
-                    //           ),
-                    //         ],
-                    //       ),
-                    //     ),
-                    //   ),
-                    // ),
-                    // singleSpace(),
                     const AlreadyHaveAnAccountCheck(
                       login: true,
                     ),

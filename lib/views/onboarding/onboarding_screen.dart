@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:sizer/sizer.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
@@ -87,7 +86,14 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           ),
           child: IconButton(
             onPressed: () {
-              Navigator.pop(context);
+              if (_currentPage > 0) {
+                _currentPage--;
+                _pageController.animateToPage(
+                  _currentPage,
+                  duration: const Duration(milliseconds: 500),
+                  curve: Curves.easeInOut,
+                );
+              }
             },
             icon: const Icon(
               Icons.arrow_back_ios_new,
@@ -153,7 +159,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               );
             } else {
               Go.offUntil(() => const LoginScreen());
-              // Handle last page navigation or completion
             }
           },
           label: _currentPage == 2 ? 'Discover Now' : 'Next',

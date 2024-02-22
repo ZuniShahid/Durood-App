@@ -34,7 +34,6 @@ class SalwatCardWidget extends StatelessWidget {
       ),
       child: Stack(
         children: [
-          // Background Image with Black Overlay
           ClipRRect(
             borderRadius: BorderRadius.circular(16),
             child: ColorFiltered(

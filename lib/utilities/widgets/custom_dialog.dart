@@ -41,7 +41,6 @@ class CustomDialogBox {
                               fit: BoxFit.contain,
                               child: Text(
                                 title,
-                                // 'Are you sure you want to apply this class',
                                 style: const TextStyle(
                                     fontSize: 12, fontWeight: FontWeight.bold),
                               ),
@@ -152,7 +151,6 @@ class CustomDialogBox {
                               fit: BoxFit.contain,
                               child: Text(
                                 'Please enter your password',
-                                // 'Are you sure you want to apply this class',
                                 style: TextStyle(
                                     fontSize: 12, fontWeight: FontWeight.bold),
                               ),
@@ -239,8 +237,6 @@ class CustomDialogBox {
         });
   }
 
-  // TODO: show success dialog
-
   static void showErrorDialog({
     String title = 'Error',
     String? description = 'Something went wrong',
@@ -279,7 +275,6 @@ class CustomDialogBox {
                     Center(
                       child: Text(
                         title,
-                        // 'Are you sure you want to apply this class',
                         style: const TextStyle(
                             fontSize: 18, fontWeight: FontWeight.bold),
                       ),
@@ -289,7 +284,6 @@ class CustomDialogBox {
                         fit: BoxFit.contain,
                         child: Text(
                           description!,
-                          // 'Are you sure you want to apply this class',
                           style: const TextStyle(
                               fontSize: 14, fontWeight: FontWeight.bold),
                         ),
@@ -394,7 +388,6 @@ class CustomDialogBox {
                           if (onPressed != null) {
                             onPressed();
                           } else {
-                            // Default behavior (close the dialog)
                             if (Get.isDialogOpen!) {
                               Get.back();
                               Get.back();
@@ -494,8 +487,6 @@ class CustomDialogBox {
     );
   }
 
-  //show snack bar
-  //show loading
   static void showLoading([String? message]) {
     Get.dialog(
       barrierDismissible: false,
@@ -515,7 +506,6 @@ class CustomDialogBox {
     );
   }
 
-  //hide loading
   static void hideLoading() {
     if (Get.isDialogOpen!) Get.back();
   }
