@@ -38,6 +38,8 @@ class _SpirtualVideoScreenState extends State<SpirtualVideoScreen> {
 
       if (response.statusCode == 200) {
         final jsonResponse = json.decode(response.body);
+        print("jsonResponse");
+        print(jsonResponse);
 
         if (jsonResponse['Error'] == false) {
           List<dynamic> videosData = jsonResponse['Videos'];

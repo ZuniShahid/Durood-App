@@ -171,6 +171,19 @@ class _SignUpScreenState extends State<SignUpScreen> {
           },
           validator: (value) => CustomValidator.isEmpty(value),
         ),
+        const SizedBox(height: 2),
+        Row(
+          children: [
+            const SizedBox(width: 20),
+            const Text(
+              '+923XXXXXXXXX',
+              style: TextStyle(
+                fontSize: 12,
+                color: AppColors.textGrey,
+              ),
+            ),
+          ],
+        ),
         singleSpace(),
         doubleSpace(),
       ],
