@@ -1,11 +1,31 @@
+import 'dart:convert';
+
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class PushNotificationService {
   late RemoteMessage? navigate;
 
-  _navigation() {}
+  _navigation() {
+    if (navigate != null && navigate!.data.containsKey('link')) {
+      String? link = navigate!.data['link'];
+      if (link != null && link.isNotEmpty) {
+        _launchUrl(link);
+      }
+    }
+  }
+
+  Future<void> _launchUrl(String url) async {
+    final Uri _url = Uri.parse(url);
+    print("_url");
+    print(_url);
+
+    if (!await launchUrl(_url)) {
+      throw Exception('Could not launch $_url');
+    }
+  }
 
   void handleMessage(RemoteMessage message) {
     print("in app open handleMessage");
@@ -14,7 +34,7 @@ class PushNotificationService {
     _navigation();
   }
 
-  void onSelectNotification(String? payload) {
+  void onSelectNotification(String? payload) async {
     print("onSelectNotification");
     _navigation();
   }
@@ -38,6 +58,18 @@ class PushNotificationService {
     NotificationDetails platformChannelSpecifics = NotificationDetails(android: androidPlatformChannelSpecifics);
     print("message.data");
     print(message.data);
+    print(message.data);
+    print("Payload: ${message.data}");
+    print("Data: ${message.notification!.body}");
+    print("Notification: ${message.notification!.body}");
+    print("Notification Title: ${message.notification!.title}");
+    print("Payload:");
+    message.data.forEach((key, value) {
+      print('$key: $value');
+    });
+
+    // var res = jsonDecode(message.data['notification']);
+    // print('RES: $res');
     if (GetPlatform.isAndroid) {
       await FlutterLocalNotificationsPlugin().show(
           123, message.notification!.title, message.notification!.body, platformChannelSpecifics,

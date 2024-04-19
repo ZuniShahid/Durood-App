@@ -7,6 +7,7 @@ import 'package:http/http.dart' as http;
 import '../constants/app_colors.dart';
 import '../constants/page_navigation.dart';
 import '../controllers/auth_controller.dart';
+import '../main.dart';
 import '../preferences/auth_prefrence.dart';
 import '../utilities/push_notification.dart';
 import 'home/bottom_nav_bar.dart';
@@ -14,13 +15,20 @@ import 'onboarding/onboarding_screen.dart';
 
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   print("Handling a background message: ${message.data}");
-  RemoteMessage navigate = message;
+
+  // Check if the message contains a notification
+  if (message.data.containsKey('link')) {
+    String? link = message.data['link'];
+    if (link != null && link.isNotEmpty) {
+      launchUrls(link);
+    }
+  }
 }
 
 setNotificationData() async {
   final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
   final PushNotificationService obj = PushNotificationService();
-  FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
+  // FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
   FirebaseMessaging.onMessageOpenedApp.listen((obj.handleMessage));
   FirebaseMessaging.onMessage.listen((obj.selectNotification));
   await flutterLocalNotificationsPlugin
