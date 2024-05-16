@@ -249,4 +249,49 @@ class AuthController extends GetxController {
       print('Error during edit profile request: $error');
     }
   }
+
+  Future<void> deleteAccount() async {
+    var body = {'email': userData.value.email};
+    try {
+      _baseController.showLoading('Deleting your account...');
+
+      // Make HTTP DELETE request
+      var response = await DataApiService.instance.post('auth/delete-account', body).catchError((error) {
+        if (error is BadRequestException) {
+          return error.message!;
+        } else {
+          _baseController.handleError(error);
+        }
+      });
+
+      if (response == null) throw Exception('Response is null');
+
+      var result = json.decode(response);
+
+      if (result['Error']) {
+        throw Exception(result['Message']);
+      }
+
+      // Clear user data and update state
+      _authPreference.saveUserDataToken(token: '');
+      _authPreference.setUserLoggedIn(false);
+      _authPreference.saveUserData(token: '');
+
+      isLoggedIn(false);
+      accessToken.value = '';
+      userData.value = UserModel();
+      update();
+
+      // Navigate to login screen
+      Go.offUntil(() => const LoginScreen());
+
+      // Show success dialog
+      CustomDialogBox.showSuccessDialog(description: 'Your account has been deleted successfully.');
+    } catch (error) {
+      // Handle errors
+      CustomDialogBox.showErrorDialog(description: error.toString());
+    } finally {
+      _baseController.hideLoading();
+    }
+  }
 }

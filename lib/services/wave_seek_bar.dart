@@ -13,13 +13,13 @@ class WaveformSeekBar extends StatefulWidget {
   final ValueChanged<Duration>? onChangeEnd;
 
   const WaveformSeekBar({
-    Key? key,
+    super.key,
     required this.duration,
     required this.position,
     required this.bufferedPosition,
     this.onChanged,
     this.onChangeEnd,
-  }) : super(key: key);
+  });
 
   @override
   _WaveformSeekBarState createState() => _WaveformSeekBarState();
@@ -77,8 +77,7 @@ class _WaveformSeekBarState extends State<WaveformSeekBar> {
                   },
                   onChangeEnd: (value) {
                     if (widget.onChangeEnd != null) {
-                      widget
-                          .onChangeEnd!(Duration(milliseconds: value.round()));
+                      widget.onChangeEnd!(Duration(milliseconds: value.round()));
                     }
                   },
                 ),
@@ -102,8 +101,7 @@ class _WaveformSeekBarState extends State<WaveformSeekBar> {
                   },
                   onChangeEnd: (value) {
                     if (widget.onChangeEnd != null) {
-                      widget
-                          .onChangeEnd!(Duration(milliseconds: value.round()));
+                      widget.onChangeEnd!(Duration(milliseconds: value.round()));
                     }
                     _dragValue = null;
                   },
@@ -114,11 +112,7 @@ class _WaveformSeekBarState extends State<WaveformSeekBar> {
         ),
         const SizedBox(height: 8),
         Text(
-          RegExp(r'((^0*[1-9]\d*:)?\d{2}:\d{2})\.\d+$')
-                  .firstMatch("$_remaining")
-                  ?.group(1) ??
-              '$_remaining',
-          style: Theme.of(context).textTheme.bodyText1,
+          RegExp(r'((^0*[1-9]\d*:)?\d{2}:\d{2})\.\d+$').firstMatch("$_remaining")?.group(1) ?? '$_remaining',
         ),
       ],
     );

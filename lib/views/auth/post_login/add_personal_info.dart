@@ -150,7 +150,7 @@ class _AddPersonalInfoScreenState extends State<AddPersonalInfoScreen> {
             ),
             const SizedBox(height: 20),
             Padding(
-              padding: const EdgeInsets.only(bottom: 30.0, left: 20, right: 20),
+              padding: const EdgeInsets.only(bottom: 10.0, left: 20, right: 20),
               child: CommonElevatedButton(
                 onPressed: () async {
                   if (pickedFile != null) {
@@ -162,9 +162,49 @@ class _AddPersonalInfoScreenState extends State<AddPersonalInfoScreen> {
                 label: 'Update',
               ),
             ),
+            Padding(
+              padding: const EdgeInsets.only(bottom: 30.0, left: 20, right: 20),
+              child: CommonElevatedButton(
+                backgroundColor: Colors.red,
+                onPressed: () async {
+                  bool shouldDelete = await showConfirmationDialog(context);
+                  if (shouldDelete) {
+                    await _authController.deleteAccount();
+                  }
+                },
+                label: 'Delete Account',
+              ),
+            ),
           ],
         ),
       ),
     );
+  }
+
+  Future<bool> showConfirmationDialog(BuildContext context) async {
+    return await showDialog<bool>(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: const Text('Confirm Deletion'),
+              content: const Text('Are you sure you want to delete your account? This action cannot be undone.'),
+              actions: <Widget>[
+                TextButton(
+                  child: const Text('Cancel'),
+                  onPressed: () {
+                    Navigator.of(context).pop(false);
+                  },
+                ),
+                ElevatedButton(
+                  child: const Text('Delete'),
+                  onPressed: () {
+                    Navigator.of(context).pop(true);
+                  },
+                ),
+              ],
+            );
+          },
+        ) ??
+        false; // Return false if the dialog is dismissed
   }
 }
